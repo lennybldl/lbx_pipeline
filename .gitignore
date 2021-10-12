@@ -1,0 +1,4 @@
+*.pyc
+.history/
+venv/
+Pipeline/data/prefs.json

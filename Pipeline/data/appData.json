@@ -1,0 +1,32 @@
+{
+    "assets": {
+        "props": {
+            "prefix": "pr_",
+            "path": "assets\\props"
+        },
+        "characters": {
+            "prefix": "ch_",
+            "path": "assets\\characters"
+        },
+        "shot": {
+            "prefix": "sh_",
+            "path": "scenes"
+        }
+    },
+    "tasks": [
+        "modeling",
+        "rig",
+        "layout",
+        "animation"
+    ],
+    "maya_folders": [
+        "WIP",
+        "DEF",
+        "Publish"
+    ],
+    "unreal_folders": [
+        "modeling",
+        "textures",
+        "animation"
+    ]
+}
