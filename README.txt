@@ -7,4 +7,7 @@ Install:
     2 - Set the cloned python_core package path in the install.py file
         e.g: python_core_path = r"C:\my\path\to\the\setup.py\file"
     3 - execute the install.py file
-    4 - launch the app with the start.bat file
+    4 - launch the app with the start.bat file or in maya with :
+
+from pipeline import maya_launcher
+window = maya_launcher.exec_()

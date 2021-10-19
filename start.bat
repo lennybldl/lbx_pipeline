@@ -1,4 +1,4 @@
 call venv\Scripts\activate.bat
-cd KeepItTidy\packages
-call exec_.py
+cd Pipeline\python
+call python exec_.py
 pause

@@ -52,34 +52,71 @@ class Database(properties.DatabaseProperties):
         app_data = {
             "assets": {
                 "props": {
-                    "prefix": "pr_",
+                    "prefix": "pr",
                     "path": r"assets\props",
+                    "tasks": [
+                        "modeling",
+                        "rig",
+                    ],
                 },
                 "characters": {
-                    "prefix": "ch_",
+                    "prefix": "ch",
                     "path": r"assets\characters",
+                    "tasks": [
+                        "modeling",
+                        "rig",
+                    ],
                 },
                 "shot": {
-                    "prefix": "sh_",
+                    "prefix": "sh",
                     "path": r"scenes",
+                    "tasks": [
+                        "layout",
+                        "animation",
+                    ],
                 },
             },
-            "tasks": [
-                "modeling",
-                "rig",
-                "layout",
-                "animation",
-            ],
-            "maya_folders": [
-                "WIP",
-                "DEF",
-                "Publish",
-            ],
-            "unreal_folders": [
-                "modeling",
-                "textures",
-                "animation",
-            ],
+            "tasks": {
+                "modeling": {
+                    "suffix": "mod",
+                    "folders": [
+                        "DEF",
+                        "WIP",
+                    ],
+                    "pipe_node": "GEO",
+                },
+                "texturing": {
+                    "suffix": "tex",
+                    "folders": [
+                        "DEF",
+                        "WIP",
+                    ],
+                },
+                "rig": {
+                    "suffix": "rig",
+                    "folders": [
+                        "DEF",
+                        "WIP",
+                    ],
+                    "pipe_node": "RIG",
+                },
+                "layout": {
+                    "suffix": "lay",
+                    "folders": [
+                        "DEF",
+                        "WIP",
+                    ],
+                    "pipe_node": "LAYOUT",
+                },
+                "animation": {
+                    "suffix": "anim",
+                    "folders": [
+                        "DEF",
+                        "WIP",
+                    ],
+                    "pipe_node": "pipe_node",
+                },
+            },
         }
 
         # save default appData in a json file

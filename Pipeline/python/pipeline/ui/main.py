@@ -41,6 +41,7 @@ class Main(base_ui.MainWindow):
         layout.addLayout(lay)
 
         # add the open create
-        lay = open_create.OpenCreate()
-        lay.populate()
-        layout.addLayout(lay)
+        self.open_create_lay = open_create.OpenCreate()
+        self.open_create_lay.populate()
+        layout.addLayout(self.open_create_lay)
+        self.open_create_lay.populate_asset_list()

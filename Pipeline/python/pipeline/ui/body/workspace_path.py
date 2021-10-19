@@ -3,8 +3,10 @@
 from python_core.pyside2 import base_ui
 from python_core.pyside2.widgets import layout
 
+from pipeline.utils import database
 
-class WorkspacePath(layout.HBoxLayout):
+
+class WorkspacePath(layout.VBoxLayout):
     """Create a layout to manage the workspace path."""
 
     def __init__(self, *args, **kwargs):
@@ -12,14 +14,24 @@ class WorkspacePath(layout.HBoxLayout):
 
         super(WorkspacePath, self).__init__(*args, **kwargs)
 
+        self.db = database.Database()
+
     def populate(self):
         """Populate the workspace path with buttons to interact."""
 
         self.add_label("Workspace Path : ")
 
-        self.path = self.add_line_edit("", placeholder=r"C:\path\to\maya\project\...")
+        layout = self.add_layout("horizontal")
+        self.path = layout.add_line_edit(
+            "",
+            placeholder=r"C:\path\to\maya\project\...",
+            tooltip="The maya project path.",
+        )
+        self.path.editingFinished.connect(self.save_prefs)
 
-        self.add_button("Browse...", clicked=self.browse)
+        layout.add_button("Browse...", clicked=self.browse)
+
+        self.set_prefs()
 
     def browse(self):
         """Browse to the workspace path."""
@@ -34,3 +46,26 @@ class WorkspacePath(layout.HBoxLayout):
             self.path.set_text(result[0])
         else:
             self.path.set_text(reset=True)
+
+        self.save_prefs()
+
+    def save_prefs(self):
+        """Save current ui prefs."""
+
+        prefs = self.db.prefs
+
+        prefs.update(
+            {
+                "workspace": self.path.text(),
+            }
+        )
+
+        self.db.prefs = prefs
+
+    def set_prefs(self):
+        """Edit the ui with the saved prefs."""
+
+        prefs = self.db.prefs
+
+        if prefs.get("workspace", False):
+            self.path.setText(prefs["workspace"])

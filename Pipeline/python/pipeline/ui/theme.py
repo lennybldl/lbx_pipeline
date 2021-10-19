@@ -1,12 +1,10 @@
 """Manage the default style sheets of the application."""
 
-import json
-import os
-
-from PySide2.QtGui import QPalette, QColor
 from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QStyleFactory, QPushButton, QComboBox
+from PySide2.QtGui import QColor, QPalette
 
-from python_core.types import colors
+from python_core.types import colors, objects
 from python_core.pyside2 import common
 
 from pipeline.utils import database
@@ -16,7 +14,7 @@ DATABASE = database.Database()
 
 # define primary and background color
 PRIMARY = "#19C5F7"
-BACKGROUND = "#343445"
+BACKGROUND = "#3A3A3D"
 
 # get the color palette
 palette = colors.color_palette(PRIMARY)
@@ -33,26 +31,36 @@ TOOLTIPS_TEXT = "black"
 TOOLTIPS_BG = BACKGROUND_1
 
 # set the highlighted color
-HIGHLIGHT = palette["background_5"] + colors.hexa_from_rgba(127).replace("#", "")
-
-
-def default_stylesheets():
-    """Set the styleSheets to default by setting the values in a json file."""
-
-    stylesheets = {}
-
-    with open(os.path.join(DATABASE.data_path, "styleSheets.json"), "w") as file:
-        file.write(json.dumps(stylesheets, indent=4))
+HIGHLIGHT = "#5285a6"
 
 
 def theme(app):
     """Set the default app color theme.
 
-    :param app: The application to set the theme to
-    :type app: QApplication
+    :param app: The app or main window to set the theme to
+    :type app: QApplication, QMainWindow
     """
     # set the app style
-    app.setStyle("Fusion")
+    app.setStyle(QStyleFactory.create("Fusion"))
+
+    # set the fusion style for every specifyied widgets
+    if objects.inherits_from(app, ["QMainWindow", "QWidget", "QDialog"]):
+        # set the fusion theme for all the widgets
+        widgets = {
+            QPushButton: ["PushButton"],
+            QComboBox: [
+                "ComboBox",
+                "AssetTypeComboBox",
+                "TaskTypeComboBox",
+                "TaskTypeFilterComboBox",
+            ],
+        }
+
+        for widget_type, object_names in widgets.items():
+            for object_name in object_names:
+                children = app.findChildren(widget_type, object_name)
+                for child in children:
+                    child.setStyle(QStyleFactory.create("Fusion"))
 
     # set the app colors
     palette = QPalette()
