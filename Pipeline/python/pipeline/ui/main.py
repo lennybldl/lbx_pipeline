@@ -9,7 +9,7 @@ from pipeline.utils import database
 class Main(base_ui.MainWindow):
     """Manage the main window."""
 
-    _title = "Pipeline 0.1.0"
+    _title = "Pipeline 0.1.1"
     _name = "MainWindow"
 
     def __init__(self, *args, **kwargs):
@@ -36,9 +36,9 @@ class Main(base_ui.MainWindow):
         layout = main_layout.add_layout("vertical")
 
         # add the workspace path
-        lay = workspace_path.WorkspacePath()
-        lay.populate()
-        layout.addLayout(lay)
+        path = workspace_path.WorkspacePath()
+        path.populate()
+        layout.addWidget(path)
 
         # add the open create
         self.open_create_lay = open_create.OpenCreate()

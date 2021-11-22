@@ -1,12 +1,13 @@
 """Create the ui to define the workspace body."""
 
+from PySide2.QtWidgets import QComboBox, QListWidget
+
 from python_core.pyside2 import base_ui
-from python_core.pyside2.widgets import layout
 
 from pipeline.utils import database
 
 
-class WorkspacePath(layout.VBoxLayout):
+class WorkspacePath(base_ui.Widget):
     """Create a layout to manage the workspace path."""
 
     def __init__(self, *args, **kwargs):
@@ -19,17 +20,17 @@ class WorkspacePath(layout.VBoxLayout):
     def populate(self):
         """Populate the workspace path with buttons to interact."""
 
-        self.add_label("Workspace Path : ")
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
-        layout = self.add_layout("horizontal")
-        self.path = layout.add_line_edit(
-            "",
-            placeholder=r"C:\path\to\maya\project\...",
-            tooltip="The maya project path.",
+        self.layout.add_label("Workspace Path : ")
+
+        lay = self.layout.add_layout("horizontal")
+        self.path = lay.add_line_edit(
+            placeholder=r"C:\path\to\maya\project\...", tooltip="The maya project path."
         )
         self.path.editingFinished.connect(self.save_prefs)
 
-        layout.add_button("Browse...", clicked=self.browse)
+        lay.add_button("Browse...", clicked=self.browse)
 
         self.set_prefs()
 
@@ -48,6 +49,9 @@ class WorkspacePath(layout.VBoxLayout):
             self.path.set_text(reset=True)
 
         self.save_prefs()
+
+        # update the asset list widget on the current project
+        self.__update_asset_list()
 
     def save_prefs(self):
         """Save current ui prefs."""
@@ -69,3 +73,17 @@ class WorkspacePath(layout.VBoxLayout):
 
         if prefs.get("workspace", False):
             self.path.setText(prefs["workspace"])
+
+    def __update_asset_list(self):
+        """Update the asset list widget on the current project."""
+
+        # update the list widget
+        main_window = self.topLevelWidget()
+
+        # find the ui elements
+        asset_type_ui = main_window.findChild(QComboBox, "AssetTypeComboBox")
+        task_type_ui = main_window.findChild(QComboBox, "TaskTypeComboBox")
+        list_widget_ui = main_window.findChild(QListWidget, "AssetsListWidget")
+
+        # update the asset list widget
+        list_widget_ui.populate(asset_type_ui.currentText(), task_type_ui.currentText())
