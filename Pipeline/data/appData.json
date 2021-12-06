@@ -8,6 +8,14 @@
             "pipe_node": "GEO",
             "suffix": "mod"
         },
+        "atlas": {
+            "folders": [
+                "DEF",
+                "WIP"
+            ],
+            "pipe_node": "ATLAS",
+            "suffix": "atl"
+        },
         "animation": {
             "folders": [
                 "DEF",
@@ -65,6 +73,13 @@
             "tasks": [
                 "modeling",
                 "rig"
+            ]
+        },
+        "atlas": {
+            "path": "assets\\atlas",
+            "prefix": "at",
+            "tasks": [
+                "modeling"
             ]
         }
     }

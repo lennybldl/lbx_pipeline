@@ -10,12 +10,14 @@ from pipeline.api.maya import maya_asset, exports, creation, studient_warning
 from pipeline.api.maya.tools import rig, animation
 from pipeline.ui.dialogs import dialogs, popups
 from pipeline.ui.tools import references_manager, export_animations
+from pipeline.ui.images import images
 from pipeline.utils import database
 
 
 class AppMenuBar(menu_bar.MenuBar):
 
     _name = "AppMenuBar"
+    maya_icon = images.get("maya.png")
 
     def __init__(self, *args, **kwargs):
         """Initialize the app menu bar."""
@@ -51,6 +53,7 @@ class AppMenuBar(menu_bar.MenuBar):
             "Increment Save",
             triggered=self.increment_save,
             tooltip="(MAYA) " + self.increment_save.__doc__,
+            icon=self.maya_icon,
         )
         # add a recent menu to open recent files
         self.recent_menu = files_menu.add_menu("Recent")
@@ -86,16 +89,19 @@ class AppMenuBar(menu_bar.MenuBar):
             "Save DEF",
             triggered=self.save_def,
             tooltip="(MAYA) " + self.save_def.__doc__,
+            icon=self.maya_icon,
         )
         files_menu.add_action(
             "Export",
             triggered=self.export,
             tooltip="(MAYA) " + self.export.__doc__,
+            icon=self.maya_icon,
         )
         files_menu.add_action(
             "Publish Unreal",
             triggered=self.publish,
             tooltip="(MAYA) " + self.publish.__doc__,
+            icon=self.maya_icon,
         )
 
         files_menu.add_separator()
@@ -115,6 +121,7 @@ class AppMenuBar(menu_bar.MenuBar):
             "Save / Export / Publish / Git",
             triggered=self.finish_asset,
             tooltip="(MAYA) " + self.finish_asset.__doc__,
+            icon=self.maya_icon,
         )
 
         # set the style for every menus
@@ -139,11 +146,6 @@ class AppMenuBar(menu_bar.MenuBar):
             triggered=lambda: self.create_task("texturing"),
             tooltip="Create the texturing task on the current selected item.",
         )
-        texturing_menu.add_action(
-            "Publish",
-            triggered=lambda: exports._publish_texturing,
-            tooltip=exports._publish_texturing.__doc__,
-        )
 
         # add a rig menu
         rig_menu = tools_menu.add_menu("Rig", tearoff=True)
@@ -151,17 +153,20 @@ class AppMenuBar(menu_bar.MenuBar):
             "Update/Import model",
             triggered=self.update_model,
             tooltip="(MAYA) " + self.update_model.__doc__,
+            icon=self.maya_icon,
         )
         rig_menu.add_separator()
         rig_menu.add_action(
             "Set joints to export",
             triggered=rig.set_joints_to_export,
             tooltip="(MAYA) " + rig.set_joints_to_export.__doc__,
+            icon=self.maya_icon,
         )
         rig_menu.add_action(
             "Select joints to export",
             triggered=rig.select_joints_to_export,
             tooltip="(MAYA) Select the selected joints saved in the pipe node.",
+            icon=self.maya_icon,
         )
 
         # add a layout / animation menu
@@ -170,17 +175,20 @@ class AppMenuBar(menu_bar.MenuBar):
             "References manager",
             triggered=self.references_manager,
             tooltip="(MAYA) " + self.references_manager.__doc__,
+            icon=self.maya_icon,
         )
         layout_menu.add_separator()
         layout_menu.add_action(
             "Import layout",
             triggered=self.import_layout,
             tooltip="(MAYA) " + self.import_layout.__doc__,
+            icon=self.maya_icon,
         )
         layout_menu.add_action(
             "Export animations",
             triggered=self.export_animations,
             tooltip="(MAYA) " + self.export_animations.__doc__,
+            icon=self.maya_icon,
         )
 
         # set the styje for every menus

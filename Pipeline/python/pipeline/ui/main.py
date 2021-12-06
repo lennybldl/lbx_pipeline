@@ -9,7 +9,7 @@ from pipeline.utils import database
 class Main(base_ui.MainWindow):
     """Manage the main window."""
 
-    _title = "Pipeline 0.1.1"
+    _title = "Pipeline 0.1.2"
     _name = "MainWindow"
 
     def __init__(self, *args, **kwargs):

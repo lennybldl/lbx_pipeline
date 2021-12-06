@@ -259,7 +259,7 @@ def increment_save(comment=None):
 
     # update pipe_node
     update_pipe_node()
-    print("# Pipeline : Pipe node update")
+    print("# Pipeline : Pipe node updated")
 
     # save the opend file as a recently opend file
     ASSET.update_recents(os.path.basename(path))
