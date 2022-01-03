@@ -48,12 +48,21 @@ class AppMenuBar(menu_bar.MenuBar):
             "New",
             triggered=self.create_new,
             tooltip=self.create_new.__doc__,
+            shortcut="CTRL+N",
         )
         files_menu.add_action(
             "Increment Save",
             triggered=self.increment_save,
             tooltip="(MAYA) " + self.increment_save.__doc__,
             icon=self.maya_icon,
+            shortcut="CTRL+Shift+S",
+        )
+        files_menu.add_action(
+            "Import",
+            triggered=self.import_model,
+            tooltip="(MAYA) " + "import something in the current scene.",
+            icon=self.maya_icon,
+            shortcut="CTRL+I",
         )
         # add a recent menu to open recent files
         self.recent_menu = files_menu.add_menu("Recent")
@@ -286,6 +295,13 @@ class AppMenuBar(menu_bar.MenuBar):
         # create the task
         if self.asset.create(asset_task_name) is None:
             print("# Pipeline : " + asset_task_name + " already exists")
+
+    def import_model(self):
+        """Import a model."""
+
+        from maya import cmds
+
+        cmds.Import()
 
     # interact with assets
 

@@ -56,8 +56,6 @@ def save_def():
     # clean studient warning
     studient_warning.remove_from_file(destination)
 
-    # TODO Compress file
-
     print("# Pipeline : DEF saved -> " + destination)
 
 

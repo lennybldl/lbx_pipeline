@@ -82,6 +82,11 @@ class Assets(paths.Paths):
         directory = self.get_path_from_name(name)
         latest_file = self.get_latest_file(directory, ".ma")
 
+        # if the latest file doesn't exists, try to deduce it from def
+        if not latest_file:
+            self.deduce_wip_from_def(name)
+        latest_file = self.get_latest_file(directory, ".ma")
+
         # if there is no file, ask if we want to create one
         if latest_file is None:
             # build a dialog to ask if we want to create a new scene

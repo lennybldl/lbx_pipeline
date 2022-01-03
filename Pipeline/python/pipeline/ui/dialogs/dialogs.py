@@ -55,15 +55,7 @@ class CreateNewDialog(base_ui.Dialog):
         theme.theme(self)
 
         # execute the dialog
-        result = super(CreateNewDialog, self).exec_()
-
-        # return the result of the dialog
-        if result:
-            if self.comment.text():
-                return strings.camel_case(self.comment.text(), lower_first=True)
-            return None
-
-        return False
+        super(CreateNewDialog, self).exec_()
 
     def conform_name(self):
         """Conform the asset name set in the line edit."""
@@ -103,6 +95,8 @@ class CreateNewDialog(base_ui.Dialog):
         # close the window
         self.create_button.setEnabled(False)
         self.asset_name.clear()
+
+        self.accept()
 
     def set_prefs(self):
         """Edit the ui with the saved prefs."""

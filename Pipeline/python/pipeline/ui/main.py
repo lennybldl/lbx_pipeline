@@ -3,14 +3,16 @@
 from python_core.pyside2 import base_ui
 
 from pipeline.ui.body import app_menu_bar, open_create, workspace_path
+from pipeline.ui.images import images
 from pipeline.utils import database
 
 
 class Main(base_ui.MainWindow):
     """Manage the main window."""
 
-    _title = "Pipeline 0.1.2"
+    _title = "Pipeline 0.1.3"
     _name = "MainWindow"
+    _icon = images.get("pipe")
 
     def __init__(self, *args, **kwargs):
         """initialise the main window."""
