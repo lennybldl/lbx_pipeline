@@ -58,47 +58,6 @@ def import_reference(asset_name, times=1):
     print("# Pipeline : Imported {}x -> {}".format(times, path))
 
 
-def import_layout(asset_name):
-    """Import the layout in the current animation scene.
-
-    :param asset_name: The name of the current shot.
-    :type asset_name: str
-    """
-
-    from maya import cmds
-
-    # figure out the layout file path
-    path = os.path.join(
-        ASSET.get_path_from_name(asset_name),
-        "layout",
-        "export",
-        asset_name + ".ma",
-    )
-
-    # stop importing if no layout found
-    if not os.path.exists(path):
-        print("# Pipeline : No layout export found -> " + path)
-        return
-
-    # import the layout as reference
-    cmds.file(
-        path,
-        reference=True,
-        type="mayaAscii",
-        ignoreVersion=True,
-        groupLocator=True,
-        mergeNamespacesOnClash=False,
-        namespace=asset_name,
-        options="v=0;",
-    )
-
-    # list all imported layouts
-    layouts = cmds.ls("*:LAYOUT")
-
-    # parent the imported layout under the asset group
-    cmds.parent(layouts[0], asset_name)
-
-
 # animation methods
 
 

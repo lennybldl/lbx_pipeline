@@ -26,14 +26,6 @@
             "pipe_node": "pipe_node",
             "suffix": "anim"
         },
-        "layout": {
-            "folders": [
-                "DEF",
-                "WIP"
-            ],
-            "pipe_node": "LAYOUT",
-            "suffix": "lay"
-        },
         "texturing": {
             "folders": [
                 "DEF",
@@ -52,10 +44,9 @@
     },
     "assets": {
         "shot": {
-            "path": "scenes",
+            "path": "scenes\\shots",
             "prefix": "sh",
             "tasks": [
-                "layout",
                 "animation"
             ]
         },
@@ -78,6 +69,13 @@
         "atlas": {
             "path": "assets\\atlas",
             "prefix": "at",
+            "tasks": [
+                "modeling"
+            ]
+        },
+        "layout": {
+            "path": "scenes\\layout",
+            "prefix": "lay",
             "tasks": [
                 "modeling"
             ]

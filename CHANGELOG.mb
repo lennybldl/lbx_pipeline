@@ -3,6 +3,12 @@
 
 ## [Released]
 
+## [0.2.0] - 04/01/2022
+
+### Added
+- Manage the layout as an asset type layout
+- Finish and asset without export
+
 ## [0.1.3] - 03/01/2022
 
 ### Added

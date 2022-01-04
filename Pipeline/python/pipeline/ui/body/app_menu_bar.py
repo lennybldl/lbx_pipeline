@@ -7,7 +7,7 @@ from python_core.pyside2.widgets import menu_bar
 
 from pipeline.api.checks import git
 from pipeline.api.maya import maya_asset, exports, creation, studient_warning
-from pipeline.api.maya.tools import rig, animation
+from pipeline.api.maya.tools import rig
 from pipeline.ui.dialogs import dialogs, popups
 from pipeline.ui.tools import references_manager, export_animations
 from pipeline.ui.images import images
@@ -127,7 +127,7 @@ class AppMenuBar(menu_bar.MenuBar):
 
         files_menu.add_separator()
         files_menu.add_action(
-            "Save / Export / Publish / Git",
+            "Save DEF / Publish / Git",
             triggered=self.finish_asset,
             tooltip="(MAYA) " + self.finish_asset.__doc__,
             icon=self.maya_icon,
@@ -184,13 +184,6 @@ class AppMenuBar(menu_bar.MenuBar):
             "References manager",
             triggered=self.references_manager,
             tooltip="(MAYA) " + self.references_manager.__doc__,
-            icon=self.maya_icon,
-        )
-        layout_menu.add_separator()
-        layout_menu.add_action(
-            "Import layout",
-            triggered=self.import_layout,
-            tooltip="(MAYA) " + self.import_layout.__doc__,
             icon=self.maya_icon,
         )
         layout_menu.add_action(
@@ -414,22 +407,6 @@ class AppMenuBar(menu_bar.MenuBar):
         manager.populate()
         manager.show()
 
-    def import_layout(self):
-        """Import the layout of the current shot."""
-
-        # get informations on the current file
-        informations = self.asset.get_informations_from_current_file()
-        asset_type, basename, task, version, comment, path = informations
-        asset_name = self.asset.get_asset_name(asset_type, basename)
-
-        if task != "animation":
-            raise RuntimeError(
-                "# Pipeline : The layout only can be imported in an animation scene."
-            )
-
-        if popups.confirm("Import layout?"):
-            animation.import_layout(asset_name)
-
     def export_animations(self):
         """Export the animations for unreal."""
 
@@ -491,17 +468,15 @@ class AppMenuBar(menu_bar.MenuBar):
         """Finish the asset to publish it in the pipe and save it on git.
 
         - Save a DEF version of the asset
-        - export it
         - publish it to unreal
         - launch the git sanity checks.
         """
 
-        if popups.confirm("Save DEF, Export and publish this asset?"):
+        if popups.confirm("Save DEF and publish this asset?"):
             # ask if we want to save the file before
             popups.save_popup()
 
         # do the exports
         exports.save_def()
-        exports.export()
         exports.publish()
         self.git_sanity_checks()

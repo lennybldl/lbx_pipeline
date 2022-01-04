@@ -4,7 +4,7 @@ import os
 import sys
 
 from pipeline.api.maya import maya_asset
-from pipeline.api.maya.tools import rig, animation
+from pipeline.api.maya.tools import rig
 from pipeline.ui.dialogs import popups
 from pipeline.utils import database
 
@@ -205,6 +205,7 @@ def animation_creation():
     groups.append(cmds.group(empty=True, name="CAMERAS"))
     groups.append(cmds.group(empty=True, name="LIGHTS"))
     groups.append(cmds.group(empty=True, name="ANIMATED"))
+    groups.append(cmds.group(empty=True, name="LAYOUT"))
     cmds.group(groups, name=asset_name)
 
     # save the file with the empty groups
@@ -212,9 +213,6 @@ def animation_creation():
 
     # add attributes on the RIG group to keep track of informations
     initialize_pipe_node()
-
-    # import the layout if it exists
-    animation.import_layout(asset_name)
 
 
 # runtime creations
