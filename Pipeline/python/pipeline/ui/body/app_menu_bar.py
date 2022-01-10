@@ -3,6 +3,7 @@
 import os
 
 from PySide2.QtWidgets import QComboBox, QListWidget, QStyleFactory
+from PySide2.QtGui import QIcon
 from python_core.pyside2.widgets import menu_bar
 
 from pipeline.api.checks import git
@@ -121,8 +122,8 @@ class AppMenuBar(menu_bar.MenuBar):
         )
         files_menu.add_action(
             "Studient warnings",
-            triggered=lambda: studient_warning.remove_from_all_files(["DEF", "export"]),
-            tooltip='Remove the studient warning from the files in "export" or "DEF"',
+            triggered=self.studient_warnings,
+            tooltip=self.studient_warnings.__doc__,
         )
 
         files_menu.add_separator()
@@ -463,6 +464,27 @@ class AppMenuBar(menu_bar.MenuBar):
 
         git.update_gitignore()
         git.ignore_oversized_files()
+
+    def studient_warnings(self):
+        """Remove the studient warning from the files in 'export' or 'DEF'"""
+
+        # build a dialog to ask if we want to create a new task
+        dialog = dialogs.YesNoDialog()
+        # set the elements to display in the dialog
+        dialog.setWindowIcon(QIcon(images.get("lapin")))
+        dialog.title = "Get rid of studient warning?"
+        dialog.title_msg = "This will modify every 'DEF' and 'Export' maya file"
+        dialog.title_msg_color = "red"
+        msg = [
+            "Si tu ne t'appelle ni Lenny ni Lucile, ne clique pas sur ce bouton.",
+            "Tu risques de te faire tres tres mal!",
+        ]
+        dialog.msg = "\n".join(msg)
+        if not dialog.exec_():
+            print("# Pipeline : Studient warning aborted")
+            return
+
+        studient_warning.remove_from_all_files(["DEF", "export"])
 
     def finish_asset(self):
         """Finish the asset to publish it in the pipe and save it on git.

@@ -215,6 +215,28 @@ def animation_creation():
     initialize_pipe_node()
 
 
+def cleaning_creation():
+    """Actions to perform at the cleaning scene creation."""
+
+    from maya import cmds
+
+    # get informations on the current file
+    informations = ASSET.get_informations_from_current_file()
+    asset_type, basename, task, version, comment, path = informations
+    asset_name = ASSET.get_asset_name(asset_type, basename)
+
+    # create empty groups
+    groups = list()
+    groups.append(cmds.group(empty=True, name="pipe_node"))
+    cmds.group(groups, name=asset_name)
+
+    # save the file with the empty groups
+    cmds.file(save=True, type="mayaAscii", force=True)
+
+    # add attributes on the RIG group to keep track of informations
+    initialize_pipe_node()
+
+
 # runtime creations
 
 

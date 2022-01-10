@@ -37,10 +37,15 @@ def import_reference(asset_name, times=1):
             path = export
             file_type = "FBX"
         else:
-            raise ValueError(
-                "# Pipeline : No maya export found for {} ".format(asset_name)
-                + "in modeling or rig."
-            )
+            export = os.path.join(path, "cleaning", "export", asset_name + ".ma")
+            if os.path.exists(export):
+                path = export
+                file_type = "mayaAscii"
+            else:
+                raise ValueError(
+                    "# Pipeline : No maya export found for {} ".format(asset_name)
+                    + "in modeling, cleaning or rig."
+                )
 
     # import the asset as reference
     for _ in range(times):

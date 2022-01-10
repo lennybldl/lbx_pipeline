@@ -80,6 +80,9 @@ def export():
     elif task == "layout":
         _export_layout()
 
+    elif task == "cleaning":
+        _export_cleaning()
+
     elif task == "animation":
         print("# Pipeline : You don't need to export the animation task from maya")
 
@@ -129,6 +132,12 @@ def _export_layout():
     """Save the current file in an export folder to be imported as reference."""
 
     print("# Pipeline : Layout exported -> " + _copy_export_current_scene())
+
+
+def _export_cleaning():
+    """Save the current file in an export folder to be imported as reference."""
+
+    print("# Pipeline : Cleaning exported -> " + _copy_export_current_scene())
 
 
 def _copy_export_current_scene():
@@ -342,6 +351,10 @@ def _publish_layout():
     )
 
     print("# Pipeline : Layout published -> " + path)
+
+
+def _publish_mocap():
+    """Do nothing."""
 
 
 def publish_animation(pipe_nodes=None):

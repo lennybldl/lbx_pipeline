@@ -19,12 +19,20 @@
         "animation": {
             "folders": [
                 "DEF",
-                "WIP",
-                "mocap",
-                "clean_mocap"
+                "WIP"
             ],
             "pipe_node": "pipe_node",
             "suffix": "anim"
+        },
+        "cleaning": {
+            "folders": [
+                "DEF",
+                "WIP",
+                "raw",
+                "clean"
+            ],
+            "pipe_node": "pipe_node",
+            "suffix": "clean"
         },
         "texturing": {
             "folders": [
@@ -48,6 +56,13 @@
             "prefix": "sh",
             "tasks": [
                 "animation"
+            ]
+        },
+        "mocap": {
+            "path": "scenes\\mocap",
+            "prefix": "mc",
+            "tasks": [
+                "cleaning"
             ]
         },
         "characters": {

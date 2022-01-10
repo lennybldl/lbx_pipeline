@@ -284,8 +284,8 @@ class Paths(object):
         if not files:
             return None
 
-        # open the latest file with is not a bake file
-        if files[-1].endswith("_bake.ma"):
+        # open the latest file wich is not a bake or finalize file
+        if files[-1].endswith("_bake.ma") or files[-1].endswith("_finalize.ma"):
             origin_file = files[-1].replace("_bake.ma", ".ma")
             if os.path.exists(os.path.join(directory, origin_file)):
                 return origin_file
