@@ -3,12 +3,17 @@
 
 ## [Released]
 
+## [0.3.1] - 11/01/2022
+
+### Fixed
+- Fix igore bake and finalize files
+
 ## [0.3.0] - 10/01/2022
 
 ### Added
 - Popup before studient warning
 - add mocap asset
-- ope, lastes now ignores finalize scenes
+- open latest now ignores finalize scenes
 
 ## [0.2.0] - 04/01/2022
 
