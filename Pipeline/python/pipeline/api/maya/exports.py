@@ -297,11 +297,23 @@ def _publish_rig():
     ASSET.create_directories(path)
     path = os.path.join(path, asset_name + ".fbx")
 
+    # get if we export a blendshape
+    rig.select_joints_to_export()
+    blendshape = False
+    for node in cmds.ls(sl=True):
+        for history in cmds.listHistory(node):
+            if cmds.objectType(history, isType="blendShape"):
+                blendshape = True
+                print("# Pipeline : Blendshape found")
+                break
+
     # uncheck the include children and input connection check boxes
     if mel.eval("FBXExportIncludeChildren  -q"):
         mel.eval("FBXExportIncludeChildren  -v false")
     if mel.eval("FBXExportInputConnections -q"):
-        mel.eval("FBXExportInputConnections -v false")
+        mel.eval(
+            "FBXExportInputConnections -v {}".format("true" if blendshape else "false")
+        )
 
     # publish the GEO group and the joints in the pipe node
     rig.select_joints_to_export()
@@ -384,7 +396,7 @@ def publish_animation(pipe_nodes=None):
     if mel.eval("FBXExportIncludeChildren  -q"):
         mel.eval("FBXExportIncludeChildren  -v false")
     if mel.eval("FBXExportInputConnections -q"):
-        mel.eval("FBXExportInputConnections -v false")
+        mel.eval("FBXExportInputConnections -v true")
 
     # export the animations
     for asset_namespace, infos in animateds.items():
@@ -396,6 +408,26 @@ def publish_animation(pipe_nodes=None):
 
         # publish the animated joints to publish
         rig.select_joints_to_export(asset_namespace + ":RIG")
+        blendshape = False
+        for node in cmds.ls(sl=True):
+            for history in cmds.listHistory(node):
+                if cmds.objectType(history, isType="blendShape"):
+                    blendshape = True
+                    print(
+                        "# Pipeline : Blendshape found for {}".format(asset_namespace)
+                    )
+                    break
+        if blendshape:
+            # if we export a blendshape, only publish the meshes in GEO group
+            rig.select_joints_to_export(asset_namespace + ":RIG")
+            cmds.select(
+                cmds.listRelatives(
+                    asset_namespace + ":GEO", allDescendents=True, type="mesh"
+                ),
+                add=True,
+            )
+        else:
+            rig.select_joints_to_export(asset_namespace + ":RIG")
 
         cmds.file(
             path,

@@ -3,6 +3,11 @@
 
 ## [Released]
 
+## [0.3.2] - 15/01/2022
+
+### Fixed
+- Fix rig and animation export to support blendshape
+
 ## [0.3.1] - 11/01/2022
 
 ### Fixed
