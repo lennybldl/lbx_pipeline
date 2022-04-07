@@ -2,7 +2,7 @@
 
 from python_core.pyside2 import base_ui
 
-from pipeline.api.maya.tools import animation
+from pipeline.api.maya_api.tools import animation
 from pipeline.ui import theme
 from pipeline.ui.widgets import assets_list_widget, list_filter_bar
 from pipeline.ui.dialogs import popups

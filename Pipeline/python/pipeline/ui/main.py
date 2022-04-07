@@ -10,7 +10,7 @@ from pipeline.utils import database
 class Main(base_ui.MainWindow):
     """Manage the main window."""
 
-    _title = "Pipeline 0.3.2"
+    _title = "Pipeline 1.0.0"
     _name = "MainWindow"
     _icon = images.get("pipe")
 

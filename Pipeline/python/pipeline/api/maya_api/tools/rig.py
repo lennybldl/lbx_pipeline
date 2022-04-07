@@ -4,7 +4,7 @@ import os
 
 from python_core.types import strings
 
-from pipeline.api.maya import maya_asset
+from pipeline.api.maya_api import maya_asset
 from pipeline.utils import database
 
 ASSET = maya_asset.MayaAsset()

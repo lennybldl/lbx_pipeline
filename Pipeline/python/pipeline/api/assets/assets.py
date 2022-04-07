@@ -51,7 +51,7 @@ class Assets(paths.Paths):
             # create the file too
             if len(splitted_name) > 3:
                 # create the maya file
-                from pipeline.api.maya import creation
+                from pipeline.api.maya_api import creation
 
                 path = creation.create_maya_scenes(name)
                 print("# Pipeline : Created -> " + path)

@@ -4,8 +4,8 @@ from PySide2.QtCore import Qt
 
 from python_core.pyside2 import base_ui
 
-from pipeline.api.maya import exports
-from pipeline.api.maya.tools import animation
+from pipeline.api.maya_api import exports
+from pipeline.api.maya_api.tools import animation
 from pipeline.ui import theme
 from pipeline.ui.widgets import node_list_widget_item
 from pipeline.ui.dialogs import popups

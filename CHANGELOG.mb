@@ -3,6 +3,14 @@
 
 ## [Released]
 
+## [1.0.0] - 19/01/2022
+
+### added
+- disconnect from mocap the joints to export before publishing animation
+
+### Fixed
+- Refactoring maya api
+
 ## [0.3.2] - 15/01/2022
 
 ### Fixed

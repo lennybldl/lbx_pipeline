@@ -3,8 +3,8 @@
 import os
 import sys
 
-from pipeline.api.maya import maya_asset
-from pipeline.api.maya.tools import rig
+from pipeline.api.maya_api import maya_asset
+from pipeline.api.maya_api.tools import rig
 from pipeline.ui.dialogs import popups
 from pipeline.utils import database
 

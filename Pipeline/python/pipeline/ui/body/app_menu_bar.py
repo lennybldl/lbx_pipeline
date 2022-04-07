@@ -7,8 +7,8 @@ from PySide2.QtGui import QIcon
 from python_core.pyside2.widgets import menu_bar
 
 from pipeline.api.checks import git
-from pipeline.api.maya import maya_asset, exports, creation, studient_warning
-from pipeline.api.maya.tools import rig
+from pipeline.api.maya_api import maya_asset, exports, creation, studient_warning
+from pipeline.api.maya_api.tools import rig
 from pipeline.ui.dialogs import dialogs, popups
 from pipeline.ui.tools import references_manager, export_animations
 from pipeline.ui.images import images

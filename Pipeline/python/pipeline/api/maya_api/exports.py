@@ -5,8 +5,8 @@ import shutil
 
 from python_core.types import strings
 
-from pipeline.api.maya import maya_asset, creation, studient_warning
-from pipeline.api.maya.tools import rig, animation
+from pipeline.api.maya_api import maya_asset, creation, studient_warning
+from pipeline.api.maya_api.tools import rig, animation
 from pipeline.utils import database
 
 ASSET = maya_asset.MayaAsset()
@@ -405,6 +405,11 @@ def publish_animation(pipe_nodes=None):
             publish_path,
             "_".join([asset_namespace, asset_name.split("_")[1], "anim.fbx"]),
         )
+
+        # TODO : delete these two lines (specific to welcome aboard) from the pipe
+        # # disconnect the joints to export from their influence
+        cmds.select(asset_namespace + ":RIG")
+        animation.disconnect_rig_from_mocap()
 
         # publish the animated joints to publish
         rig.select_joints_to_export(asset_namespace + ":RIG")
