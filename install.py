@@ -1,25 +1,25 @@
+"""To install the package with rez."""
+
 import os
+import shutil
+import sys
 
-# since the python_core package is private,
-# you need to already have it on your computer and to specify it's path
-python_core_path = r"C:\Users\Lenny\Documents\CODE_MesProjets\0000_python_core"
 
-# create the install commands
-cmds = list()
-cmds.append(f"cd {os.path.dirname(__file__)}")
-cmds.append("python -m venv venv")
-cmds.append(r"call venv\Scripts\activate.bat")
-cmds.append(f"pip install -e {python_core_path}")
+def build(source_path, build_path, install_path, targets):
+    """Build the package by copying it to the install_path."""
 
-# write the commands in a .bat file
-install_file = os.path.join(os.path.dirname(__file__), "install.bat")
-with open(install_file, "w") as file:
-    file.write("\n".join(cmds))
+    # copy the src folder to the installation path
+    _source_path = os.path.join(source_path, "src")
+    _install_path = os.path.join(install_path, "src")
+    if os.path.exists(_install_path):
+        shutil.rmtree(_install_path)
+    shutil.copytree(_source_path, _install_path)
 
-# execute the commands
-os.system(f"call {install_file}")
 
-# remove the created bat file
-os.remove(install_file)
-
-print("\n\nSuccessfully installed\n\n")
+if __name__ == "__main__":
+    build(
+        source_path=os.environ["REZ_BUILD_SOURCE_PATH"],
+        build_path=os.environ["REZ_BUILD_PATH"],
+        install_path=os.environ["REZ_BUILD_INSTALL_PATH"],
+        targets=sys.argv[1:],
+    )

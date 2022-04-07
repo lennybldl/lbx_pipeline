@@ -1,4 +1,4 @@
-*.pyc
+.vscode/
 .history/
+*.pyc
 venv/
-Pipeline/data/prefs.json
