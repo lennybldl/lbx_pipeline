@@ -14,7 +14,7 @@ def launch_windows_ui():
     commands.start(software="windows")
 
     app = QApplication()
-    window = main_window.WindowsMainWindow()
+    window = main_window.MainWindow()
     window.show()
     app.exec_()
 

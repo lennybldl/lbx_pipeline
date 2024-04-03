@@ -1,7 +1,6 @@
 """Manage the package's commands the artits have access to."""
 
-from lbx_pipeline import manager
-from lbx_pipeline.internal import commands
+from lbx_pipeline.internal import session
 
 
 def start(software):
@@ -10,7 +9,7 @@ def start(software):
     Arguments:
         software (str): The software we're executing the pipeline in.
     """
-    manager.Manager(software=software)
+    session.start(software=software)
 
 
 # edit project
@@ -22,7 +21,7 @@ def load(path):
     Arguments:
         path (str): The path to the pipeline.
     """
-    manager = commands.get_manager()
+    manager = session.get_manager()
     if manager:
         manager.load(path)
 
@@ -33,13 +32,13 @@ def create(path):
     Arguments:
         path (str): The path to create the pipeline to.
     """
-    manager = commands.get_manager()
+    manager = session.get_manager()
     if manager:
         manager.create(path)
 
 
 def save():
     """Save the current pipeline."""
-    manager = commands.get_manager()
+    manager = session.get_manager()
     if manager:
         manager.project.save()
