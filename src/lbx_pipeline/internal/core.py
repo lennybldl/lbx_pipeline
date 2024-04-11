@@ -1,17 +1,20 @@
 """Manage the constant variables of the application."""
 
-from lbx_pipeline.api import attributes, parameters
+from lbx_python_core import system
 
-ATTRIBUTE_TYPES = {
-    "bool": attributes.BoolAttribute,
-    "int": attributes.IntAttribute,
-    "float": attributes.FloatAttribute,
-    "str": attributes.StrAttribute,
-}
+import lbx_pipeline
 
-PARAMETERS_TYPES = {
-    "bool": parameters.BoolParameter,
-    "int": parameters.IntParameter,
-    "float": parameters.FloatParameter,
-    "str": parameters.StrParameter,
-}
+# config
+PROJECT_EXTENSION = "pipe"
+PROJECT_FOLDER_NAME = ".pipeline"
+ADD_ONS_FOLDER_NAME = "add_ons"
+FEATURES_TYPES = ["nodes", "macros"]
+
+# folders
+RESOURCES = lbx_pipeline.PATH.get_folder("resources")
+# package folders
+PACKAGE_ADD_ONS_PATH = RESOURCES.get_folder(ADD_ONS_FOLDER_NAME)
+# app data folders
+APP_DATA_PATH = system.Folder([system.get_user_path(), ".lbx", "pipeline"])
+USER_ADD_ONS_PATH = APP_DATA_PATH.get_folder(ADD_ONS_FOLDER_NAME)
+DEFAULT_WORKSPACE_PATH = APP_DATA_PATH.get_folder("default")

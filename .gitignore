@@ -2,3 +2,5 @@
 .history/
 *.pyc
 venv/
+RnD/untracked/
+tests/test_workspace

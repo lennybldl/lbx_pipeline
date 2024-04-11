@@ -3,12 +3,12 @@
 import os
 import sys
 
-from lbx_python_core import items
+from lbx_python_core import system
 
 from lbx_pipeline import core
 
 
-class Script(items.File):
+class Script(system.File):
     """Manage a script object."""
 
 
@@ -44,11 +44,11 @@ class PythonScript(Script):
             try:
                 module.execute(*args, **kwargs)
             except:  # noqa E722
-                core.PROJECT_LOGGER.exception(
+                core.project_logger.exception(
                     "An error occured while executing - '{}'".format(self)
                 )
         else:
-            core.PROJECT_LOGGER.warning(
+            core.project_logger.warning(
                 "Could not find an 'execute' function in - '{}'".format(self)
             )
 

@@ -2,41 +2,16 @@
 
 from lbx_python_core import strings
 
-from lbx_pipeline.internal import core, logging
-
-logger = logging.SessionLogger()
+from lbx_pipeline.api.abstract import data_structures
 
 
-class Attribute(object):
+class Attribute(data_structures.DataStructure):
     """Manage the base class for the attribute."""
 
+    default_storage_variable = "attributes"
+
     # private variables
-    _default = None
-
-    def __init__(self, node, long_name, **kwargs):
-        """Initialize the attribute.
-
-        Arguments:
-            node (Node): The node the attribute is linked to.
-            long_name (str): The long name to give to the attribute.
-        """
-        # initialize the attribute
-        super(Attribute, self).__init__()
-
-        # initialize the variables
-        self.node = node
-        self.type = strings.snake_case(self.__class__.__name__.split("Attribute")[0])
-        self.long_name = strings.remove_specials(long_name, keep="_")
-        self.nice_name = kwargs.get("nice_name", strings.title_case(long_name))
-        self.in_plugs = list()
-        self.out_plugs = list()
-
-        # add the parameters in memory
-        self.parameters = list()
-        default = kwargs.get("default", self._default)
-        self.add_parameter(
-            self.type, "value", value=kwargs.get("value", default), default=default
-        )
+    _parameters = None
 
     def __str__(self):
         """Override the __repr__ method.
@@ -44,7 +19,7 @@ class Attribute(object):
         Returns:
             str: The object as a string.
         """
-        return "({}){}".format(self.type, self.long_name)
+        return self.data_path
 
     def __repr__(self):
         """Override the __repr__ method.
@@ -60,7 +35,7 @@ class Attribute(object):
         Returns:
             bool: True if equal else False.
         """
-        return self.long_name == other
+        return self.get_parameter("value") == other
 
     def __ne__(self, other):
         """Override the __ne__ method.
@@ -68,76 +43,195 @@ class Attribute(object):
         Returns:
             bool: True if different else False.
         """
-        return self.long_name != other
+        return self.get_parameter("value") != other
+
+    def __gt__(self, other):
+        """Override the __gt__ method.
+
+        Returns:
+            bool: True if greater, else False.
+        """
+        return self.get_parameter("value") < other
+
+    def __lt__(self, other):
+        """Override the __lt__ method.
+
+        Returns:
+            bool: True if lower, else False.
+        """
+        return self.get_parameter("value") > other
+
+    def __ge__(self, other):
+        """Override the __ge__ method.
+
+        Returns:
+            bool: True if greater or equal, else False.
+        """
+        return self.get_parameter("value") <= other
+
+    def __le__(self, other):
+        """Override the __le__ method.
+
+        Returns:
+            bool: True if lower or equal, else False.
+        """
+        return self.get_parameter("value") >= other
 
     # methods
 
+    def initialize(self, **data):
+        """Initialize the object before deserializing it."""
+        # inheritance
+        super(Attribute, self).initialize(**data)
+
+        # add the parameters in memory
+        self.add_parameter(
+            self.data_type,
+            name="value",
+            value=data.get("value"),
+            default=data.get("default"),
+        )
+
     def serialize(self):
-        """Serialize the attribute.
+        """Serialize the object.
 
         Returns:
-            dict: The serialized attribute.
+            dict: The object's serialization.
         """
-        data = dict()
-
-        # serialize the variables
-        for name in ["type", "long_name", "nice_name"]:
-            data[name] = getattr(self, name)
-
-        # serialize the parameters
-        for parameter in self.parameters:
-            data[parameter.name] = parameter.serialize()
-
+        data = super(Attribute, self).serialize()
+        data["nice_name"] = self.nice_name
+        data["parameters"] = [o.serialize() for o in self.parameters.values()]
         return data
 
-    # parameters methods
-
-    def add_parameter(self, parameter_type, name, *args, **kwargs):
-        """Add a parameter to the current attribute.
+    def deserialize(self, **data):
+        """Deserialize the object.
 
         Arguments:
-            parameter_type (str): The type of attribute to create.
-            name (str): The long name to give to the attribute.
+            data (dict): The data to deserialize with.
+        """
+        # inheritance
+        super(Attribute, self).deserialize(**data)
+
+        # initialize the variables
+        self.nice_name = data.get("nice_name", strings.title_case(self.name))
+
+        # initialize the parameters
+        for param_data in data.get("parameters", list()):
+            param = self.parameters.get(param_data["name"])
+            if param:
+                param.deserialize(parent=self, **param_data)
+            else:
+                self.add_parameter(**param_data)
+
+    # data objects methods
+
+    def add_parameter(self, data_type, **data):
+        """Add a parameter to the current object.
+
+        Arguments:
+            data_type (str): The type of parameter to create.
+            data (dict): The data to deserialize with.
 
         Returns:
             Parameter: The created parameter.
         """
-        # get the parameter class of the parameter to create
-        parameter_class = core.PARAMETERS_TYPES.get(parameter_type)
+        # create the parameter
+        parameter_class = self.data_manager.parameters.get(data_type)
         if not parameter_class:
-            return logger.error(
-                "Invalid attribute_type '{}'. Attribute types can be : {}".format(
-                    parameter_type, list(core.ATTRIBUTE_TYPES.keys())
-                )
-            )
+            raise TypeError("No valid data_type given : {}".format(data_type))
 
-        # create the parameter and link it to the current attribute
-        parameter = parameter_class(self, name, *args, **kwargs)
-        setattr(self.__class__, name, parameter)
-        self.parameters.append(parameter)
+        # create the parameter
+        data["parent"] = self
+        data["storage_variable"] = "parameters"
+        parameter = parameter_class(**data)
         return parameter
 
     def get_parameter(self, name):
-        """Get a parameter of the current attribute.
+        """Get a parameter using its name.
 
         Arguments:
-            name (str): The name of the parameter to get.
+            name (str): The name of the parameter.
+
+        Raises:
+            KeyError: Tried to access non-existing parameter.
 
         Returns:
-            Parameter: The parameter if found.
+            Parameter: The parameter we asked for.
         """
-        for param in self.parameters:
-            if param.name == name:
-                return param
+        param = self.parameters.get(name)
+        if param:
+            return param
+        raise KeyError("Tried to access non-existing parameter '{}'".format(name))
+
+    def get_parameters(self):
+        """Get the list of parameters on the current object.
+
+        Returns:
+            dict: The current parameters.
+        """
+        if self._parameters is None:
+            self._parameters = dict()
+        return self._parameters
+
+    parameters = property(get_parameters)
+
+    def query(self, name, default=False):
+        """Query a parameter value.
+
+        Arguments:
+            name (str): The name of the parameter to query.
+
+        Keyword Arguments:
+            default (bool, optional): True to query the default value, else False.
+                Default to False.
+
+        Returns:
+            any: The value to the parameter.
+        """
+        param = self.get_parameter(name)
+        if default:
+            return param.default
+        return param.value
+
+    def edit(self, name, value, default=False):
+        """Edit a parameter value.
+
+        Arguments:
+            name (str): The name of the parameter to edit.
+            value (any): The value to set for the parameter.
+
+        Keyword Arguments:
+            default (bool, optional): True to edit the default value, else False.
+                Default to False.
+        """
+        param = self.get_parameter(name)
+        if default:
+            param.default = value
+        else:
+            param.value = value
+
+    # maniplation methods
+
+    def reset(self):
+        """Reset the attribute's value to its default."""
+        parameter = self.get_parameter("value")
+        parameter.reset()
+
+    def reset_to_factory(self):
+        """Reset all the parameters of the attribute."""
+        for parameter in self.parameters:
+            parameter.reset()
 
 
-# classic attributes
+# custom attributes
 
 
-class BoolAttribute(Attribute):
+class ClassicAttribute(Attribute):
+    """Manage the abstract numeric attributes common behavior."""
+
+
+class Bool(Attribute):
     """Manage the int attributes."""
-
-    _default = False
 
 
 class NumericAttribute(Attribute):
@@ -145,50 +239,60 @@ class NumericAttribute(Attribute):
 
     _attribute_type = None
 
-    def __init__(self, *args, **kwargs):
-        """Initialize the attribute."""
+    def initialize(self, **data):
+        """Initialize the object before deserializing it."""
 
-        # initialize the attribute
-        super(NumericAttribute, self).__init__(*args, **kwargs)
+        # inheritance
+        super(NumericAttribute, self).initialize(**data)
 
         # add the parameters in memory
         self.add_parameter(
-            self._attribute_type, "min", value=kwargs.get("min"), default=None
+            self._attribute_type,
+            name="min",
+            value=data.get("min"),
+            default=None,
+            accept_none=True,
         )
         self.add_parameter(
-            self._attribute_type, "max", value=kwargs.get("max"), default=None
+            self._attribute_type,
+            name="max",
+            value=data.get("max"),
+            default=None,
+            accept_none=True,
         )
         self.add_parameter(
-            self._attribute_type, "step", value=kwargs.get("step"), default=1
+            self._attribute_type,
+            name="step",
+            value=data.get("step"),
+            default=1,
         )
 
 
-class IntAttribute(NumericAttribute):
+class Int(NumericAttribute):
     """Manage the int attributes."""
 
-    _attribute_type = "int"
-    _default = 0
+    _attribute_type = "Int"
 
 
-class FloatAttribute(NumericAttribute):
+class Float(NumericAttribute):
     """Manage the float attributes."""
 
-    _attribute_type = "float"
-    _default = 0.0
+    _attribute_type = "Float"
 
-    def __init__(self, *args, **kwargs):
+    def initialize(self, **data):
         """Initialize the attribute."""
 
         # initialize the attribute
-        super(FloatAttribute, self).__init__(*args, **kwargs)
+        super(Float, self).initialize(**data)
 
         # add the parameters in memory
         self.add_parameter(
-            self._attribute_type, "precision", value=kwargs.get("precision"), default=3
+            "Int",
+            name="precision",
+            value=data.get("precision"),
+            default=3,
         )
 
 
-class StrAttribute(Attribute):
+class Str(Attribute):
     """Manage the string attributes."""
-
-    _default = ""

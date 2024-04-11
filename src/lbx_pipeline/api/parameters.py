@@ -1,47 +1,16 @@
 """Manage the parameters."""
 
-from lbx_python_core import strings
-
-from lbx_pipeline.internal import logging
-
-logger = logging.SessionLogger()
+from lbx_pipeline.api.abstract import data_objects
 
 
-class Parameter(object):
-    """Manage the base class for the parameter."""
+class Parameter(data_objects.DataObject):
+    """Manage the base class for parameters."""
+
+    default_storage_variable = "parameters"
 
     # private variables
     _value = None
     _default = None
-
-    def __init__(self, attribute, name, value, lock=False, visible=True, **kwargs):
-        """Initialize the parameter.
-
-        Arguments:
-            attribute (Attribute): The attribute the parameter is linked to.
-            name (str): The name of the parameter.
-            value (-, optional): The value of the parameter.
-
-        Keyword Arguments:
-            lock (bool, optional): True to lock the parameter, else False.
-                Default to False.
-            visible (bool, optional): True to set the parameter visible, else False.
-                Default to True.
-            default (-, optional): The default value of the parameter. Default to value.
-        """
-        # initialize the attribute
-        super(Parameter, self).__init__()
-
-        # initialize the variables
-        self.type = strings.snake_case(self.__class__.__name__.split("Parameter")[0])
-
-        # initialize the parameters properties
-        self.attribute = attribute
-        self.name = name
-        self.default = kwargs.get("default", value)
-        self.value = value
-        self.lock = lock
-        self.visible = visible
 
     def __str__(self):
         """Override the __repr__ method.
@@ -49,7 +18,7 @@ class Parameter(object):
         Returns:
             str: The object as a string.
         """
-        return str(self.value)
+        return "({}){}: {}".format(self.data_type, self.name, self.value)
 
     def __repr__(self):
         """Override the __repr__ method.
@@ -63,7 +32,7 @@ class Parameter(object):
         """Override the __eq__ method.
 
         Returns:
-            bool: True if equal else False.
+            bool: True if equal else, False.
         """
         return self.value == other
 
@@ -71,33 +40,66 @@ class Parameter(object):
         """Override the __ne__ method.
 
         Returns:
-            bool: True if different else False.
+            bool: True if different, else False.
         """
         return self.value != other
 
-    def __get__(self, *args, **kwargs):
-        """Get the value of the current parameter.
+    def __gt__(self, other):
+        """Override the __gt__ method.
 
         Returns:
-            -: The parameters value.
+            bool: True if greater, else False.
         """
-        return self.get_value()
+        return self.value < other
 
-    def __set__(self, *args, **kwargs):
-        """Set the parameter's value."""
-        self.set_value(args[1])
+    def __lt__(self, other):
+        """Override the __lt__ method.
+
+        Returns:
+            bool: True if lower, else False.
+        """
+        return self.value > other
+
+    def __ge__(self, other):
+        """Override the __ge__ method.
+
+        Returns:
+            bool: True if greater or equal, else False.
+        """
+        return self.value <= other
+
+    def __le__(self, other):
+        """Override the __le__ method.
+
+        Returns:
+            bool: True if lower or equal, else False.
+        """
+        return self.value >= other
 
     # methods
 
-    def get_path(self):
-        """Get the path of the current parameter.
+    def serialize(self):
+        """Serialize the parameter.
 
         Returns:
-            str: The dot separated path of the current parameter.
+            dict: The serialized parameter.
         """
-        return ".".join([self.attribute.node.name, self.attribute.long_name, self.name])
+        data = super(Parameter, self).serialize()
+        for key in ["default", "value", "accept_none"]:
+            data[key] = getattr(self, key)
+        return data
 
-    path = property(get_path)
+    def deserialize(self, **data):
+        """Deserialize the object.
+
+        Arguments:
+            data (dict): The data to deserialize with.
+        """
+        # inheritance
+        super(Parameter, self).deserialize(**data)
+        self.accept_none = data.get("accept_none", False)
+        self.default = data.get("default", data.get("value"))
+        self.value = data.get("value", self.default)
 
     def get_value(self):
         """Get the value of the current attribute.
@@ -135,20 +137,16 @@ class Parameter(object):
 
     default = property(get_default, set_default)
 
-    def validate_value(self, value, none_as_default=True):
+    def validate_value(self, value):
         """Make sure the value is valid.
 
         Arguments:
             value (-): The value to validate.
 
-        Keyword Arguments:
-            none_as_default (bool, optional): To set the value to default if the given
-                value is None. Default to True.
-
         Returns:
             -: The validated value.
         """
-        if none_as_default and value is None:
+        if not self.accept_none and value is None:
             return self.default
         return value
 
@@ -156,78 +154,66 @@ class Parameter(object):
         """Reset the parameter."""
         self.value = self.default
 
-    def serialize(self):
-        """Serialize the parameter.
 
-        Returns:
-            dict: The serialized parameter.
-        """
-        data = dict()
-        data["type"] = self.type
-        for key in ["default", "value", "lock", "visible"]:
-            data[key] = getattr(self, key)
-        return data
+# custom paramters
 
 
-# classic parameters
-
-
-class ClassicParameters(Parameter):
+class ClassicParameter(Parameter):
     """Manage the abstract class for common behaviors to classic parameters classes."""
 
     _parameter_type = None
 
-    def validate_value(self, value, none_as_default=True):
+    def validate_value(self, value):
         """Make sure the value is valid.
 
         Arguments:
             value (-): The value to validate.
 
-        Keyword Arguments:
-            none_as_default (bool, optional): To set the value to default if the given
-                value is None. Default to True.
-
         Returns:
             -: The validated value.
         """
         # inheritance
-        value = super(ClassicParameters, self).validate_value(value, none_as_default)
+        value = super(ClassicParameter, self).validate_value(value)
+
+        # return the value if it is acceptable
+        if self.accept_none and value is None:
+            return value
 
         # try to convert the value if possible
         if not isinstance(value, self._parameter_type):
             try:
                 value = self._parameter_type(value)
             except (TypeError, ValueError):
-                logger.error(
-                    "Invalid value '{}' for '{}' parameter".format(value, self.path)
+                self.project_logger.error(
+                    "Invalid value '{}' for '{}' parameter".format(value, self.name)
                 )
                 return self.value
 
         return value
 
 
-class BoolParameter(ClassicParameters):
+class Bool(ClassicParameter):
     """Manage the bool parameters."""
 
     _parameter_type = bool
     _default = False
 
 
-class IntParameter(ClassicParameters):
+class Int(ClassicParameter):
     """Manage the int parameters."""
 
     _parameter_type = int
     _default = 0
 
 
-class FloatParameter(ClassicParameters):
+class Float(ClassicParameter):
     """Manage the float parameters."""
 
     _parameter_type = float
     _default = 0.0
 
 
-class StrParameter(ClassicParameters):
+class Str(ClassicParameter):
     """Manage the str parameters."""
 
     _parameter_type = str
