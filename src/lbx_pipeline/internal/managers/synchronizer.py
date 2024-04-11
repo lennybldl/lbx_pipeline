@@ -9,14 +9,14 @@ from lbx_pipeline.internal.managers import manager
 class Synchronizer(object):
     """Manage the communications between the UI members."""
 
-    _instance = None
+    __instance = None
     manager = manager.Manager()
 
     def __new__(cls, *args, **kwargs):
         """Override the __new__ method to always return the same instance."""
-        if not cls._instance:
-            cls._instance = super(Synchronizer, cls).__new__(cls)
+        if not cls.__instance:
+            cls.__instance = super(Synchronizer, cls).__new__(cls)
             # register to the manager
-            cls.manager.synchronizer = cls._instance
+            cls.manager.synchronizer = cls.__instance
 
-        return cls._instance
+        return cls.__instance

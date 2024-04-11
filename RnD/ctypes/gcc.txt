@@ -1,0 +1,2 @@
+// compile using this command
+gcc -fPIC -shared -o names.so names.c

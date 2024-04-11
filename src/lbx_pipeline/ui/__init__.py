@@ -1,6 +1,6 @@
 """Manage the ui of the pipeline."""
 
-from lbx_pipeline import commands
+from lbx_pipeline import open_api
 from lbx_pipeline.ui import main_window
 from PySide2.QtWidgets import QApplication
 
@@ -9,9 +9,9 @@ def launch_windows_ui():
     """Launch the UI on a windows device.
 
     Returns:
-        WindowsMainWindow: The created main window.
+        MainWindow: The created main window.
     """
-    commands.start(software="windows")
+    open_api.run()
 
     app = QApplication()
     window = main_window.MainWindow()

@@ -6,8 +6,6 @@ from lbx_pipeline.api.abstract import data_objects
 class Parameter(data_objects.DataObject):
     """Manage the base class for parameters."""
 
-    default_storage_variable = "parameters"
-
     # private variables
     _value = None
     _default = None
@@ -98,46 +96,48 @@ class Parameter(data_objects.DataObject):
         # inheritance
         super(Parameter, self).deserialize(**data)
         self.accept_none = data.get("accept_none", False)
-        self.default = data.get("default", data.get("value"))
+        self.default = data.get("default", data.get("value", self.default))
         self.value = data.get("value", self.default)
 
+    # value methods
+
     def get_value(self):
-        """Get the value of the current attribute.
+        """Get the value of the current parameter.
 
         Returns:
-            -: The attribute's value.
+            -: The parameter's value.
         """
         return self._value
 
     def set_value(self, value):
-        """Set the value of the current attribute.
+        """Set the value of the current parameter.
 
         Arguments:
-            value (-): The value to set to the current attribute.
+            value (-): The value to set to the current parameter.
         """
-        self._value = self.validate_value(value)
+        self._value = self.validate(value)
 
     value = property(get_value, set_value)
 
     def get_default(self):
-        """Get the default value of the current attribute.
+        """Get the default value of the current parameter.
 
         Returns:
-            -: The attribute's default.
+            -: The parameter's default.
         """
         return self._default
 
     def set_default(self, value):
-        """Set the default of the current attribute.
+        """Set the default of the current parameter.
 
         Arguments:
-            value (-): The default value to set to the current attribute.
+            value (-): The default value to set to the current parameter.
         """
-        self._default = self.validate_value(value)
+        self._default = self.validate(value)
 
     default = property(get_default, set_default)
 
-    def validate_value(self, value):
+    def validate(self, value):
         """Make sure the value is valid.
 
         Arguments:
@@ -149,6 +149,8 @@ class Parameter(data_objects.DataObject):
         if not self.accept_none and value is None:
             return self.default
         return value
+
+    # manipulation methods
 
     def reset(self):
         """Reset the parameter."""
@@ -163,7 +165,7 @@ class ClassicParameter(Parameter):
 
     _parameter_type = None
 
-    def validate_value(self, value):
+    def validate(self, value):
         """Make sure the value is valid.
 
         Arguments:
@@ -173,7 +175,7 @@ class ClassicParameter(Parameter):
             -: The validated value.
         """
         # inheritance
-        value = super(ClassicParameter, self).validate_value(value)
+        value = super(ClassicParameter, self).validate(value)
 
         # return the value if it is acceptable
         if self.accept_none and value is None:

@@ -1,25 +1,33 @@
 """Manage the common behavior of all the data objects."""
 
-from lbx_python_core import strings
-
 from lbx_pipeline.api.abstract import serializable_objects
 
 
 class DataObject(serializable_objects.SerializableObject):
     """Manage the common behavior of all the data objects."""
 
-    category = None
-    default_storage_variable = None
+    path_separator = "."
 
     # private variables
-    _name = None
+    name = None
+    _parent = None
 
-    def __init__(self, *args, **data):
-        """Initialize the object."""
+    def __init__(self, parent, **data):
+        """Initialize the object.
+
+        Arguments:
+            parent (Object): The parent of the current object.
+        """
         # inheritance
         super(DataObject, self).__init__()
+
+        # intialize the variables
+        self.parent = parent
+        self.data_type = self.__class__.__name__
+
         # intialize the object
         self.initialize(**data)
+
         # deserialize the object
         self.deserialize(**data)
 
@@ -29,7 +37,7 @@ class DataObject(serializable_objects.SerializableObject):
         Returns:
             str: The object as a string.
         """
-        return self.data_path
+        return self.path
 
     def __repr__(self):
         """Override the __repr__ method.
@@ -37,12 +45,64 @@ class DataObject(serializable_objects.SerializableObject):
         Returns:
             str: The new representation of the object.
         """
-        return "({}){}".format(self.data_type, self.data_path)
+        return "({}){}".format(self.data_type, self.path)
+
+    def __eq__(self, other):
+        """Override the __eq__ method.
+
+        Returns:
+            bool: True if equal else False.
+        """
+        return self.path == other
+
+    def __ne__(self, other):
+        """Override the __ne__ method.
+
+        Returns:
+            bool: True if different else False.
+        """
+        return self.path != other
+
+    def __gt__(self, other):
+        """Override the __gt__ method.
+
+        Returns:
+            bool: True if greater, else False.
+        """
+        return self.path < other
+
+    def __lt__(self, other):
+        """Override the __lt__ method.
+
+        Returns:
+            bool: True if lower, else False.
+        """
+        return self.path > other
+
+    def __ge__(self, other):
+        """Override the __ge__ method.
+
+        Returns:
+            bool: True if greater or equal, else False.
+        """
+        return self.path <= other
+
+    def __le__(self, other):
+        """Override the __le__ method.
+
+        Returns:
+            bool: True if lower or equal, else False.
+        """
+        return self.path >= other
 
     # methods
 
     def initialize(self, **data):
-        """Initialize the object before deserializing it."""
+        """Initialize the object before deserializing it.
+
+        Arguments:
+            data (dict): The data to deserialize with.
+        """
 
     def serialize(self):
         """Serialize the object.
@@ -55,85 +115,31 @@ class DataObject(serializable_objects.SerializableObject):
         data["name"] = self.name
         return data
 
-    def deserialize(self, parent, **data):
+    def deserialize(self, **data):
         """Deserialize the object.
 
         Arguments:
-            parent (Object): The parent of the current object.
             data (dict): The data to deserialize with.
         """
-        # make sure the parent is set first
-        self.parent = parent
-        self.storage_variable = data.get(
-            "storage_variable", self.default_storage_variable
-        )
-
-        # inheritance
         super(DataObject, self).deserialize(**data)
-        # deserialize the rest of the properties
         self.name = data.get("name")
 
-    def get_name(self):
-        """Get the name of the current data structure.
+    # custom methods
 
-        Returns:
-            str: The current data structure's name.
-        """
-        return self._name
-
-    def set_name(self, name=None):
-        """Set the name of the current data structure.
+    def get_path(self, relative_to=None):
+        """Get the path of the current object in its parent hierarchy.
 
         Keyword Arguments:
-            name (str, optional): The name we want to set for the current
-                data strucuture. If None, generate a new one. Default to None.
-        """
-        # make sure the name is in snake case
-        if name:
-            name = strings.replace_specials(name, "_")
-
-        # list the existing content
-        assigned_names = dict()
-        if self.storage_variable and hasattr(self.parent, self.storage_variable):
-            assigned_names = getattr(self.parent, self.storage_variable)
-
-        # remove the current name of the node from the assigned names
-        assigned_names.pop(self._name, None)
-
-        # use a unique name if None given
-        if not name or name in assigned_names:
-            base_name = name if name else self.data_type
-            index = 1
-            while not name or name in assigned_names:
-                name = "{}{}".format(base_name, index)
-                index += 1
-
-        # set the name of the data structure
-        self._name = name
-        assigned_names[name] = self
-
-    name = property(get_name, set_name)
-
-    def get_data_type(self):
-        """Get the type of the current data object.
+            relative_to (str, optional): The path to get the relative path from.
+                Default to None.
 
         Returns:
-            str: The type of the current data object.
+            str: The path of the current object.
         """
-        return self.__class__.__name__
+        if isinstance(self.parent, DataObject):
+            path = self.parent.get_path(relative_to)
+            if path != relative_to:
+                return path + self.path_separator + self.name
+        return self.name
 
-    data_type = property(get_data_type)
-
-    # methods
-
-    def get_data_path(self):
-        """Get the full path of the current data structure.
-
-        Returns:
-            str: The full path of the current data structure.
-        """
-        if not hasattr(self.parent, "data_path"):
-            return ".".join(["", self.name])
-        return ".".join([self.parent.data_path, self.name])
-
-    data_path = property(get_data_path)
+    path = property(get_path)

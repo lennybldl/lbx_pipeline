@@ -6,7 +6,7 @@ from lbx_pipeline.internal import logging
 class Manager(object):
     """Manage the application."""
 
-    _instance = None  # Manager : The manager's instance.
+    __instance = None  # Manager : The manager's instance.
 
     data_manager = None
     synchronizer = None
@@ -15,7 +15,7 @@ class Manager(object):
 
     # app variables
     _workspace = None
-    project = None
+    is_evaluation_suspended = False
 
     def __new__(cls):
         """Override the __new__ method to always return the same instance.
@@ -23,9 +23,9 @@ class Manager(object):
         Returns:
             Manager: An instance of the Manager class.
         """
-        if not cls._instance:
-            cls._instance = super(Manager, cls).__new__(cls)
-        return cls._instance
+        if not cls.__instance:
+            cls.__instance = super(Manager, cls).__new__(cls)
+        return cls.__instance
 
     # methods
 
@@ -51,3 +51,11 @@ class Manager(object):
         self.data_manager.load_add_ons()
 
     workspace = property(get_workspace, set_workspace)
+
+    def set_evaluation_suspended(self, value):
+        """Set the node evaluation supended or not.
+
+        Arguments:
+            value (bool): True to suspend the evaluation, else False.
+        """
+        self.is_evaluation_suspended = value

@@ -1,6 +1,6 @@
 """Manage the application's logs."""
 
-from lbx_python_core import logging
+from lbx_python import logging
 
 import lbx_pipeline
 

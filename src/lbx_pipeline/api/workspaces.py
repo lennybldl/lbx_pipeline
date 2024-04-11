@@ -1,6 +1,6 @@
 """Manage the workspaces."""
 
-from lbx_python_core import system
+from lbx_python import system
 
 from lbx_pipeline.api import projects
 from lbx_pipeline.api.abstract import objects
@@ -9,6 +9,14 @@ from lbx_pipeline.internal import core
 
 class Workspace(system.Folder, objects.Object):
     """Manage the workspaces."""
+
+    def __repr__(self):
+        """Override the __repr__ method.
+
+        Returns:
+            str: The new representation of the object.
+        """
+        return "(Workspace){}".format(self.path)
 
     # management
 
@@ -62,8 +70,8 @@ class Workspace(system.Folder, objects.Object):
         # make sure the add_ons folder exists
         add_ons_folder = self.projects_folder.get_folder(core.ADD_ONS_FOLDER_NAME)
         add_ons_folder.create()
-        for add_on_type in core.FEATURES_TYPES:
-            add_ons_folder.get_folder(add_on_type).create()
+        for category in core.Features.CATEGORIES:
+            add_ons_folder.get_folder(category).create()
 
         # register to the manager
         self.manager.workspace = self
@@ -81,13 +89,27 @@ class Workspace(system.Folder, objects.Object):
                 Default to False.
 
         Raises:
+            ValueError: The project name can't be valid.
             RuntimeError: If the project already exists.
 
         Returns:
             Project: The created project.
         """
-        project_folder = self.get_folder(name)
-        project_file = project_folder.get_file(".".join([name, core.PROJECT_EXTENSION]))
+        # make sure the project name isn't invalid
+        if name.count(".") > 1:
+            raise ValueError("Invalid project name '{}'".format(name))
+
+        # figure out the project and its folder's name
+        extension = ".{}".format(core.PROJECT_EXTENSION)
+        if name.endswith(extension):
+            base_name = name.replace(extension, "")
+        else:
+            base_name = name
+            name = name + extension
+
+        # get the project items
+        project_folder = self.get_folder(base_name)
+        project_file = project_folder.get_file(name)
 
         # make sure the project is creatable
         if project_folder.exists() and not project_folder.is_empty:
@@ -112,13 +134,27 @@ class Workspace(system.Folder, objects.Object):
             name (str): The name of the project to load.
 
         Raises:
+            ValueError: The project name can't be valid.
             RuntimeError: If the project doesn't exists.
 
         Returns:
             Project: The created project.
         """
-        project_folder = self.get_folder(name)
-        project_file = project_folder.get_file(".".join([name, core.PROJECT_EXTENSION]))
+        # make sure the project name isn't invalid
+        if name.count(".") > 1:
+            raise ValueError("Invalid project name '{}'".format(name))
+
+        # figure out the project and its folder's name
+        extension = ".{}".format(core.PROJECT_EXTENSION)
+        if name.endswith(extension):
+            base_name = name.replace(extension, "")
+        else:
+            base_name = name
+            name = name + extension
+
+        # get the project items
+        project_folder = self.get_folder(base_name)
+        project_file = project_folder.get_file(name)
 
         # make sure the project exists
         if not project_file.exists():
