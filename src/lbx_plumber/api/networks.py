@@ -2,9 +2,9 @@
 
 import six
 
-from lbx_pipeline.api import attributes, dependency_graphs
-from lbx_pipeline.api.abstract import data_structures, features
-from lbx_pipeline.internal import core
+from lbx_plumber.api import attributes, dependency_graphs
+from lbx_plumber.api.abstract import data_structures, features
+from lbx_plumber.internal import core
 
 
 class Network(data_structures.DataStructure):

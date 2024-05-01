@@ -2,10 +2,10 @@
 
 from lbx_python import python
 
-from lbx_pipeline.api import nodes, parameters, workspaces
-from lbx_pipeline.api.attributes import input_attributes, output_attributes
-from lbx_pipeline.internal import core
-from lbx_pipeline.internal.managers import manager
+from lbx_plumber.api import nodes, parameters, workspaces
+from lbx_plumber.api.attributes import input_attributes, output_attributes
+from lbx_plumber.internal import core
+from lbx_plumber.internal.managers import manager
 
 
 class DataManager(object):

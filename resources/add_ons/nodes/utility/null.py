@@ -1,6 +1,6 @@
 """Create a custom node."""
 
-from lbx_pipeline import open_api
+from lbx_plumber import open_api
 
 
 class Null(open_api.BaseNode):

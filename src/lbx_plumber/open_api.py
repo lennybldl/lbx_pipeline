@@ -1,9 +1,9 @@
 """Manage the package's api commands the users have access to."""
 
-from lbx_pipeline import api
-from lbx_pipeline.api import attributes, workspaces
-from lbx_pipeline.internal import proxies
-from lbx_pipeline.internal.managers import manager, data_manager
+from lbx_plumber import api
+from lbx_plumber.api import attributes, workspaces
+from lbx_plumber.internal import proxies
+from lbx_plumber.internal.managers import manager, data_manager
 
 # management
 

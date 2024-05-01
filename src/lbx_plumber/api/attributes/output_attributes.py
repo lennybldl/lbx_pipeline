@@ -1,6 +1,6 @@
 """Manage the output attributes."""
 
-from lbx_pipeline.api import attributes
+from lbx_plumber.api import attributes
 
 
 class OutputAttribute(attributes.Attribute):

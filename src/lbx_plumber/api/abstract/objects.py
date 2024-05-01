@@ -1,6 +1,6 @@
 """Manage the common behavior of all the objects."""
 
-from lbx_pipeline.internal.managers import manager
+from lbx_plumber.internal.managers import manager
 
 
 class Object(object):

@@ -1,8 +1,8 @@
 """Manage the nodes."""
 
-from lbx_pipeline.api import attributes
-from lbx_pipeline.api.abstract import features
-from lbx_pipeline.internal import core
+from lbx_plumber.api import attributes
+from lbx_plumber.api.abstract import features
+from lbx_plumber.internal import core
 
 
 class Node(features.GraphicFeature):

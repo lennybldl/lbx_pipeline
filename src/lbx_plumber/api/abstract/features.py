@@ -1,6 +1,6 @@
 """Manage the common behavior of all the features."""
 
-from lbx_pipeline.api.abstract import objects, data_structures
+from lbx_plumber.api.abstract import objects, data_structures
 
 
 class FeatureBuilder(objects.Object):

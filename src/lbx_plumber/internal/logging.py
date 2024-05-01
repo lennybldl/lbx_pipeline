@@ -2,7 +2,7 @@
 
 from lbx_python import logging
 
-import lbx_pipeline
+import lbx_plumber
 
 
 class Logger(logging.Logger):
@@ -14,13 +14,13 @@ class Logger(logging.Logger):
 
 
 class SessionLogger(Logger):
-    """Manage the current session pipeline logs."""
+    """Manage the current session logs."""
 
     def __init__(self, *args, **kwargs):
         """Initialize the logger."""
 
         super(SessionLogger, self).__init__(
-            "({}) SESSION".format(lbx_pipeline.NAME), *args, **kwargs
+            "({}) SESSION".format(lbx_plumber.NAME), *args, **kwargs
         )
 
 
@@ -31,7 +31,7 @@ class ProjectLogger(Logger):
         """Initialize the logger."""
 
         super(ProjectLogger, self).__init__(
-            "({}) WORKSPACE".format(lbx_pipeline.NAME), *args, **kwargs
+            "({}) WORKSPACE".format(lbx_plumber.NAME), *args, **kwargs
         )
 
     # methods
@@ -42,4 +42,4 @@ class ProjectLogger(Logger):
         Arguments:
             name (str): The name of the logger.
         """
-        self.name = "({}) {}".format(lbx_pipeline.NAME, name)
+        self.name = "({}) {}".format(lbx_plumber.NAME, name)

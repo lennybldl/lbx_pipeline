@@ -1,4 +1,4 @@
-name = "lbx_pipeline"
+name = "lbx_plumber"
 version = "1.0.0"
 authors = ["Lenny Blondel"]
 description = "A python based tool made to manage, keep track, manipulate and perform automated actions."  # noqa E501

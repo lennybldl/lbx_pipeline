@@ -2,7 +2,7 @@
 
 from lbx_python import strings
 
-from lbx_pipeline.api import attributes
+from lbx_plumber.api import attributes
 
 
 class InputAttribute(attributes.Attribute):

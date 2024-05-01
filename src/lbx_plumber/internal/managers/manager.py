@@ -1,6 +1,6 @@
 """Manage the application."""
 
-from lbx_pipeline.internal import logging
+from lbx_plumber.internal import logging
 
 
 class Manager(object):

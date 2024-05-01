@@ -2,7 +2,7 @@
 
 from lbx_python import colors
 
-from lbx_pipeline import open_api
+from lbx_plumber import open_api
 
 
 class RGBAToHex(open_api.BaseNode):

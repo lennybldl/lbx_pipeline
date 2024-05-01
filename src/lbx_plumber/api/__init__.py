@@ -1,6 +1,6 @@
 """Manage the application's api."""
 
-from lbx_pipeline.internal.managers import manager, data_manager, synchronizer
+from lbx_plumber.internal.managers import manager, data_manager, synchronizer
 
 
 def run():

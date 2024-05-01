@@ -2,9 +2,9 @@
 
 from lbx_python import dictionaries, system
 
-from lbx_pipeline.api import networks
-from lbx_pipeline.api.abstract import serializable_objects
-from lbx_pipeline.internal import core
+from lbx_plumber.api import networks
+from lbx_plumber.api.abstract import serializable_objects
+from lbx_plumber.internal import core
 
 
 class Project(system.File, serializable_objects.SerializableObject):

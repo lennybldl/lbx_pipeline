@@ -1,6 +1,6 @@
 """Manage the common behavior of all the serializable objects."""
 
-from lbx_pipeline.api.abstract import objects
+from lbx_plumber.api.abstract import objects
 
 
 class SerializableObject(objects.Object):

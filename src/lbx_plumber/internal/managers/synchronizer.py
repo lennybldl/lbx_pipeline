@@ -3,7 +3,7 @@
 This class is in charge of the communication between every member of the UI.
 """
 
-from lbx_pipeline.internal.managers import manager
+from lbx_plumber.internal.managers import manager
 
 
 class Synchronizer(object):

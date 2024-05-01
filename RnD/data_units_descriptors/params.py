@@ -1,6 +1,6 @@
 """Manage the params."""
 
-from lbx_pipeline.api.abstract import objects
+from lbx_plumber.api.abstract import objects
 
 
 class Param(objects.Object):

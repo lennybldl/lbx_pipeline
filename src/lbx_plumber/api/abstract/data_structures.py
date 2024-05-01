@@ -4,7 +4,7 @@ import uuid
 
 from lbx_python import strings
 
-from lbx_pipeline.api.abstract import data_objects
+from lbx_plumber.api.abstract import data_objects
 
 
 class DataStructure(data_objects.DataObject):

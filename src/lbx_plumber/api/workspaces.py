@@ -2,9 +2,9 @@
 
 from lbx_python import system
 
-from lbx_pipeline.api import projects
-from lbx_pipeline.api.abstract import objects
-from lbx_pipeline.internal import core
+from lbx_plumber.api import projects
+from lbx_plumber.api.abstract import objects
+from lbx_plumber.internal import core
 
 
 class Workspace(system.Folder, objects.Object):

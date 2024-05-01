@@ -9,7 +9,7 @@ from lbx_python import context, logging, system
 sys.path.insert(0, system.File(__file__).get_upstream(2) + "/src")
 
 
-from lbx_pipeline import open_api  # noqa E402
+from lbx_plumber import open_api  # noqa E402
 
 logger = logging.Logger("Test")
 logger.stream_level = "info"
@@ -104,7 +104,7 @@ class Test(object):
 
     @log
     def create(self):
-        """Test generating the pipeline.
+        """Test generating the project.
 
         Returns:
             Project: The created project.
