@@ -1,8 +1,6 @@
 """Manage the ui of the application."""
 
-from lbx_plumber import open_api
-from lbx_plumber.ui import main_window
-from PySide2.QtWidgets import QApplication
+from lbx_plumber.ui import main_windows
 
 
 def run():
@@ -11,11 +9,6 @@ def run():
     Returns:
         MainWindow: The created main window.
     """
-    open_api.run()
-
-    app = QApplication()
-    window = main_window.MainWindow()
+    window = main_windows.MainWindow()
     window.show()
-    app.exec_()
-
     return window

@@ -2,13 +2,13 @@
 
 from lbx_plumber.api import attributes
 from lbx_plumber.api.abstract import features
-from lbx_plumber.internal import core
+from lbx_plumber.internal import common
 
 
 class Node(features.GraphicFeature):
     """Manage the base class for nodes."""
 
-    category = core.Features.NODE
+    category = common.Features.NODE
 
     # private variables
     _is_dirty = False

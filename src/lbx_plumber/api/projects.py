@@ -4,7 +4,7 @@ from lbx_python import dictionaries, system
 
 from lbx_plumber.api import networks
 from lbx_plumber.api.abstract import serializable_objects
-from lbx_plumber.internal import core
+from lbx_plumber.internal import common
 
 
 class Project(system.File, serializable_objects.SerializableObject):
@@ -27,7 +27,7 @@ class Project(system.File, serializable_objects.SerializableObject):
             raise RuntimeError(
                 "The given project path conflicts with another : '{}'".format(self)
             )
-        if not self.extension == core.PROJECT_EXTENSION:
+        if not self.extension == common.PROJECT_EXTENSION:
             raise ValueError("The given project path isn't valid : '{}'".format(self))
 
         # inheritance
@@ -44,7 +44,7 @@ class Project(system.File, serializable_objects.SerializableObject):
         """
         # make sure the project path is valid
         path = system.File(path or self)
-        if not path.is_file or not path.extension == core.PROJECT_EXTENSION:
+        if not path.is_file or not path.extension == common.PROJECT_EXTENSION:
             raise ValueError("The given project path isn't valid : '{}'".format(path))
 
         # load the project's data
@@ -61,7 +61,7 @@ class Project(system.File, serializable_objects.SerializableObject):
         """
         # make sure the project path is valid
         path = system.File(path or self)
-        if path.extension != core.PROJECT_EXTENSION:
+        if path.extension != common.PROJECT_EXTENSION:
             raise ValueError("The given project path isn't valid : '{}'".format(path))
 
         # save the data

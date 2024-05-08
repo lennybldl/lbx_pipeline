@@ -4,7 +4,7 @@ from lbx_python import system
 
 from lbx_plumber.api import projects
 from lbx_plumber.api.abstract import objects
-from lbx_plumber.internal import core
+from lbx_plumber.internal import common
 
 
 class Workspace(system.Folder, objects.Object):
@@ -64,13 +64,13 @@ class Workspace(system.Folder, objects.Object):
         self.path = path or self.path
 
         # make sure the project folder exists
-        self.projects_folder = self.get_folder(core.PROJECT_FOLDER_NAME)
+        self.projects_folder = self.get_folder(common.PROJECT_FOLDER_NAME)
         self.projects_folder.create()
 
         # make sure the add_ons folder exists
-        add_ons_folder = self.projects_folder.get_folder(core.ADD_ONS_FOLDER_NAME)
+        add_ons_folder = self.projects_folder.get_folder(common.ADD_ONS_FOLDER_NAME)
         add_ons_folder.create()
-        for category in core.Features.CATEGORIES:
+        for category in common.Features.CATEGORIES:
             add_ons_folder.get_folder(category).create()
 
         # register to the manager
@@ -100,7 +100,7 @@ class Workspace(system.Folder, objects.Object):
             raise ValueError("Invalid project name '{}'".format(name))
 
         # figure out the project and its folder's name
-        extension = ".{}".format(core.PROJECT_EXTENSION)
+        extension = ".{}".format(common.PROJECT_EXTENSION)
         if name.endswith(extension):
             base_name = name.replace(extension, "")
         else:
@@ -145,7 +145,7 @@ class Workspace(system.Folder, objects.Object):
             raise ValueError("Invalid project name '{}'".format(name))
 
         # figure out the project and its folder's name
-        extension = ".{}".format(core.PROJECT_EXTENSION)
+        extension = ".{}".format(common.PROJECT_EXTENSION)
         if name.endswith(extension):
             base_name = name.replace(extension, "")
         else:

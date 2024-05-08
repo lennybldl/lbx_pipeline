@@ -4,7 +4,7 @@ import six
 
 from lbx_plumber.api import attributes, dependency_graphs
 from lbx_plumber.api.abstract import data_structures, features
-from lbx_plumber.internal import core
+from lbx_plumber.internal import common
 
 
 class Network(data_structures.DataStructure):
@@ -186,7 +186,7 @@ class Network(data_structures.DataStructure):
             Node: The desired node.
         """
         node = self.get_feature(name)
-        if node.category is core.Features.NODE:
+        if node.category is common.Features.NODE:
             return node
 
     def list_nodes(self):
@@ -197,7 +197,7 @@ class Network(data_structures.DataStructure):
         """
         nodes = list()
         for feature in self.features:
-            if feature.category is core.Features.NODE:
+            if feature.category is common.Features.NODE:
                 nodes.append(feature)
         return nodes
 

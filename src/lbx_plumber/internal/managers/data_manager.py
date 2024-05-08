@@ -4,7 +4,7 @@ from lbx_python import python
 
 from lbx_plumber.api import nodes, parameters, workspaces
 from lbx_plumber.api.attributes import input_attributes, output_attributes
-from lbx_plumber.internal import core
+from lbx_plumber.internal import common
 from lbx_plumber.internal.managers import manager
 
 
@@ -30,11 +30,11 @@ class DataManager(object):
             cls.manager.data_manager = cls.__instance
 
             # make sure the app data path exists
-            core.APP_DATA_PATH.create()
-            core.USER_ADD_ONS_PATH.create()
-            core.USER_ADD_ONS_PATH.get_folder("nodes").create()
+            common.APP_DATA_PATH.create()
+            common.USER_ADD_ONS_PATH.create()
+            common.USER_ADD_ONS_PATH.get_folder("nodes").create()
             # make sure the default workspace exists
-            cls.default_workspace = workspaces.Workspace(core.DEFAULT_WORKSPACE_PATH)
+            cls.default_workspace = workspaces.Workspace(common.DEFAULT_WORKSPACE_PATH)
             try:
                 cls.default_workspace.create()
             except RuntimeError:  # in case the workspace already exists
@@ -64,16 +64,16 @@ class DataManager(object):
             setattr(self, variable, items)
 
         # get builtin features
-        self._get_nodes_from_paths([core.PACKAGE_ADD_ONS_PATH], add_ons=False)
+        self._get_nodes_from_paths([common.PACKAGE_ADD_ONS_PATH], add_ons=False)
 
     def load_add_ons(self):
         """Load the add-ons features."""
 
         # get the add-ons paths
-        paths = [core.USER_ADD_ONS_PATH, self.manager.workspace.projects_folder]
+        paths = [common.USER_ADD_ONS_PATH, self.manager.workspace.projects_folder]
 
         # clear the add-ons
-        for category in core.Features.CATEGORIES:
+        for category in common.Features.CATEGORIES:
             add_ons_list = self.add_ons.get(category, list())
             items = self.features.get(category, dict())
             self.features[category] = {

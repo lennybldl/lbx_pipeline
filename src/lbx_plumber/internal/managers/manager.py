@@ -8,10 +8,17 @@ class Manager(object):
 
     __instance = None  # Manager : The manager's instance.
 
+    # managers
     data_manager = None
     synchronizer = None
+    preferences = None
+
+    # loggers
     session_logger = logging.SessionLogger()
     project_logger = logging.ProjectLogger()
+
+    # main ui variables
+    main_window = None
 
     # app variables
     _workspace = None

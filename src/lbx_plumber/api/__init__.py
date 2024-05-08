@@ -1,6 +1,11 @@
 """Manage the application's api."""
 
-from lbx_plumber.internal.managers import manager, data_manager, synchronizer
+from lbx_plumber.internal.managers import (
+    manager,
+    data_manager,
+    preferences,
+    synchronizer,
+)
 
 
 def run():
@@ -12,3 +17,4 @@ def run():
     manager.Manager()
     data_manager.DataManager()
     synchronizer.Synchronizer()
+    preferences.Preferences()
