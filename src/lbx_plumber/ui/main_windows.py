@@ -1,12 +1,12 @@
 """Manage the main windows of the application."""
 
-from lbx_gui.qt.widgets import FramelessMainWindow
+from lbx_qt.widgets import FramelessMainWindow
 from lbx_resources import resources
 from PySide2.QtGui import QFontDatabase
 
 import lbx_plumber
 from lbx_plumber.internal import common
-from lbx_plumber.ui import abstract
+from lbx_plumber.ui import abstract, editors
 
 TITLE = "Plumber - {}".format(lbx_plumber.VERSION)
 ICON = common.get_image("pipe.png")
@@ -56,6 +56,21 @@ class MainWindow(abstract.AbstractPanel, FramelessMainWindow):
                 theme,
                 triggered=lambda x=None, path=path: self.set_theme(path),
             )
+
+        # add a layout to host the main editors
+        splitter = self.layout.add("Splitter")
+
+        # add the outliner
+        outliner_editor = editors.OutlinerEditor(self)
+        splitter.add(outliner_editor)
+        # add the network editor
+        network_editor = editors.NetworkEditor(self)
+        splitter.add(network_editor)
+        # add the attribute editor
+        attribute_editor = editors.AttributeEditor(self)
+        splitter.add(attribute_editor)
+
+        self.sub_widgets.extend([outliner_editor, network_editor, attribute_editor])
 
     # preferences
 

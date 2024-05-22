@@ -91,7 +91,7 @@ class AbstractPanel(AbstractWidget):
         setattr(self.synchronizer, strings.snake_case(self.__class__.__name__), self)
 
     def build_ui(self, *args, **kwargs):
-        """Build the widget's ui."""
+        """Build the panel's ui."""
 
     # open/close events
 

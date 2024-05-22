@@ -28,6 +28,20 @@ class Features(object):
     CATEGORIES = [NODE]
 
 
+# plugs color codes from Autodesk Maya
+SOCKET_TYPE_COLORS = {
+    "Bool": "#E69963",
+    "Int": "#62CFD9",
+    "Float": "#82D99F",
+    "Str": "#D9BE6C",
+    "Vector": "#A8D977",  # TODO just idea
+    "Matrix": "#E67373",  # TODO just idea
+    "List": "#CCB699",  # TODO just idea
+    "Dict": "#546E7A",  # TODO just idea
+    "Path": "#90A3F4",  # TODO just idea
+}
+
+
 def get_image(name, slashed=True):
     """Get an icon by its file name.
 
