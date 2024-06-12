@@ -13,7 +13,7 @@ from lbx_qt import utils, widgets
 from lbx_resources import resources
 
 
-class AnchorPoint(widgets.GraphicsItem):
+class TransformableItemAnchorPoint(widgets.GraphicsItem):
     """Manage an anchor point item."""
 
     def __init__(
@@ -37,7 +37,9 @@ class AnchorPoint(widgets.GraphicsItem):
         self.line_color_selected = line_color_selected
 
         # inheritance
-        super(AnchorPoint, self).__init__(parent=parent, *args, **kwargs)
+        super(TransformableItemAnchorPoint, self).__init__(
+            parent=parent, *args, **kwargs
+        )
 
         # setup the item
         self.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
@@ -59,7 +61,7 @@ class AnchorPoint(widgets.GraphicsItem):
             widget (QWidget, optional): The widget to paint on. Default to None.
         """
         # inheritance
-        super(AnchorPoint, self).paint(painter, *args, **kwargs)
+        super(TransformableItemAnchorPoint, self).paint(painter, *args, **kwargs)
 
         # get the color to draw the anchor with
         if self.isSelected():
@@ -87,7 +89,7 @@ class AnchorPoint(widgets.GraphicsItem):
             event (QEvent): The event to process.
         """
         # inheritance
-        super(AnchorPoint, self).hoverEnterEvent(event)
+        super(TransformableItemAnchorPoint, self).hoverEnterEvent(event)
 
         # update the item
         self.update()
@@ -99,7 +101,7 @@ class AnchorPoint(widgets.GraphicsItem):
             event (QEvent): The event to process.
         """
         # inheritance
-        super(AnchorPoint, self).hoverLeaveEvent(event)
+        super(TransformableItemAnchorPoint, self).hoverLeaveEvent(event)
 
         # update the item
         self.update()
@@ -111,7 +113,7 @@ class AnchorPoint(widgets.GraphicsItem):
             event (QEvent): The event that has been triggered.
         """
         # inheritance
-        super(AnchorPoint, self).mouseMoveEvent(event)
+        super(TransformableItemAnchorPoint, self).mouseMoveEvent(event)
         # update the anchor point of the parent item when the anchor is moved
         self.parent.setTransformOriginPoint(self.pos())
 
@@ -122,7 +124,7 @@ class AnchorPoint(widgets.GraphicsItem):
             event (QEvent): The event to process.
         """
         # inheritance
-        super(AnchorPoint, self).mouseReleaseEvent(event)
+        super(TransformableItemAnchorPoint, self).mouseReleaseEvent(event)
 
         # deselect the anchor
         self.setSelected(False)
@@ -132,14 +134,14 @@ class TransformableItem(widgets.GraphicsRectItem):
     """Manage the transformable items."""
 
     # define hover areas
-    LEFT = 0
-    TOP = 1
-    RIGHT = 2
-    BOTTOM = 3
-    TOP_LEFT = 4
-    TOP_RIGHT = 5
-    BOTTOM_RIGHT = 6
-    BOTTOM_LEFT = 7
+    LEFT_AREA = 0
+    TOP_AREA = 1
+    RIGHT_AREA = 2
+    BOTTOM_AREA = 3
+    TOP_LEFT_AREA = 4
+    TOP_RIGHT_AREA = 5
+    BOTTOM_RIGHT_AREA = 6
+    BOTTOM_LEFT_AREA = 7
 
     # the modifiers to control the transforms
     scale_uniform_modifiers = Qt.ShiftModifier
@@ -148,12 +150,16 @@ class TransformableItem(widgets.GraphicsRectItem):
 
     hovered_area = None
     scale_factor = 1.0
-    rotation_angle = 0.0
+    angle = 0.0
     edges_margins = 10
 
     # private variables
+    __is_locked = False
+    __is_in_edit_mode = False
     __minimum_width = 20
+    __maximum_width = None
     __minimum_height = 20
+    __maximum_height = None
     __extend_cursor_icon = resources.get_icon("cursors/extend_cursor.svg")
 
     def __init__(self, *args, **kwargs):
@@ -167,13 +173,61 @@ class TransformableItem(widgets.GraphicsRectItem):
         self.setAcceptHoverEvents(True)
 
         # add an anchor point to the item
-        self.anchor = AnchorPoint(self)
+        self.anchor = TransformableItemAnchorPoint(self)
 
         # set an initial rect
         self.set_size(self.get_minimum_width(), self.get_minimum_height())
         self.center_anchor_point()
 
+        # make sure the item is not in edit mode
+        self.edit(True)
+
     # methods
+
+    def lock(self):
+        """Lock the item."""
+        self.set_locked(True)
+
+    def unlock(self):
+        """Unlock the item."""
+        self.set_locked(False)
+
+    def set_locked(self, value):
+        """Lock or unlock the item.
+
+        Arguments:
+            value (bool): True to lock the item, else False.
+        """
+        self.__is_locked = value
+        if value:
+            self.edit(False)
+
+    def is_locked(self):
+        """Get if the current item is locked.
+
+        Returns:
+            bool: True if the item is locked, else False.
+        """
+        return self.__is_locked
+
+    def edit(self, value):
+        """Set the item in edit mode to be able to resize it and modify its anchor.
+
+        Arguments:
+            value (bool): True to edit the item, else False.
+        """
+        self.__is_in_edit_mode = value
+        self.anchor.setVisible(value)
+
+    def is_in_edit_mode(self):
+        """Get if the item is in edit mode.
+
+        Returns:
+            bool: True if the item is in edit mode, else False.
+        """
+        return self.__is_in_edit_mode
+
+    # size methods
 
     def setRect(self, rect):
         """Set the bounding rect of the current item.
@@ -225,6 +279,124 @@ class TransformableItem(widgets.GraphicsRectItem):
         """
         self.__minimum_height = value
 
+    def get_minimum_size(self):
+        """Get the minimum size of the current widget.
+
+        Returns:
+            tuple: The minimum size of the current item.
+        """
+        return self.get_minimum_width(), self.get_minimum_height()
+
+    def set_minimum_size(self, width, height):
+        """Set the minimum size of the current item.
+
+        Arguments:
+            width (int, float): The minimum width of the current item.
+            height (int, float): The minimum height of the current item.
+        """
+        self.set_minimum_width(width), self.set_minimum_height(height)
+
+    def get_maximum_width(self):
+        """Get the maximum width of the current widget.
+
+        Returns:
+            int: The maximum width of the current item.
+        """
+        return self.__maximum_width
+
+    def set_maximum_width(self, value):
+        """Set the maximum width of the current item.
+
+        Arguments:
+            value (int): The maximum width of the current item.
+        """
+        self.__maximum_width = value
+
+    def get_maximum_height(self):
+        """Get the maximum height of the current widget.
+
+        Returns:
+            int: The maximum height of the current item.
+        """
+        return self.__maximum_height
+
+    def set_maximum_height(self, value):
+        """Set the maximum height of the current item.
+
+        Arguments:
+            value (int): The maximum height of the current item.
+        """
+        self.__maximum_height = value
+
+    def get_maximum_size(self):
+        """Get the maximum size of the current widget.
+
+        Returns:
+            tuple: The maximum size of the current item.
+        """
+        return self.get_maximum_width(), self.get_maximum_height()
+
+    def set_maximum_size(self, width, height):
+        """Set the maximum size of the current item.
+
+        Arguments:
+            width (int, float): The maximum width of the current item.
+            height (int, float): The maximum height of the current item.
+        """
+        self.set_maximum_width(width), self.set_maximum_height(height)
+
+    def set_fixed_width(self, value):
+        """Set the fixed width of the current item.
+
+        Arguments:
+            value (int): The fixed width of the current item.
+        """
+        self.set_minimum_width(value)
+        self.set_maximum_width(value)
+
+    def set_fixed_height(self, value):
+        """Set the fixed height of the current item.
+
+        Arguments:
+            value (int): The fixed height of the current item.
+        """
+        self.set_minimum_height(value)
+        self.set_maximum_height(value)
+
+    def set_fixed_size(self, width, height):
+        """Set the fixed size of the item.
+
+        Arguments:
+            width (int, float): The fixed width of the current item.
+            height (int, float): The fixed height of the current item.
+        """
+        self.set_minimum_size(width, height)
+        self.set_maximum_size(width, height)
+
+    # paint methods
+
+    def paint(self, painter, option, widget=None):
+        """Override the paint method to add custom behaviours.
+
+        Arguments:
+            painter (QPainter): The painter to use to draw the item.
+            option (QStyleOptionGraphicsItem): To add style options for the item.
+
+        Keyword Arguments:
+            widget (QWidget, optional): The widget to paint on. Default to None.
+        """
+        # inheritance
+        super(TransformableItem, self).paint(painter, option, widget)
+
+        if self.is_in_edit_mode():
+            utils.draw_rect(
+                painter,
+                self.rect(),
+                line_color="#000000",
+                line_width=2,
+                fill_color=None,
+            )
+
     # transform methods
 
     def transformOriginPoint(self):
@@ -251,7 +423,7 @@ class TransformableItem(widgets.GraphicsRectItem):
 
         # move the item and the anchor point to seamlessly move the anchor point
         self.setPos(self.pos() + offset)
-        super(AnchorPoint, self.anchor).setPos(
+        super(TransformableItemAnchorPoint, self.anchor).setPos(
             super(TransformableItem, self).transformOriginPoint()
         )
 
@@ -283,12 +455,17 @@ class TransformableItem(widgets.GraphicsRectItem):
         """Center the anchor point."""
         self.setTransformOriginPoint(self.boundingRect().center())
 
-    def resize(self, event):
+    # events
+
+    def resize_event(self, event):  # noqa C901
         """Resize the item.
 
         Arguments:
             event (QEvent): The event that has been triggered.
         """
+        if not self.is_in_edit_mode():
+            return
+
         # get the current modifiers
         modifiers = event.modifiers()
         center = modifiers & self.scale_center_modifiers
@@ -299,61 +476,103 @@ class TransformableItem(widgets.GraphicsRectItem):
         current_rect = QRectF(rect)  # keep the current rect in memory
         cursor_pos = event.pos()
         cursor_x, cursor_y = cursor_pos.x(), cursor_pos.y()
+        # get the size limits
+        min_width, min_height = self.get_minimum_size()
+        max_width, max_height = self.get_maximum_size()
 
-        # resize the item from the dragging edge
-        if self.hovered_area in (self.LEFT, self.TOP_LEFT, self.BOTTOM_LEFT):
-            rect.setX(min(rect.right() - self.get_minimum_width(), cursor_x))
-        if self.hovered_area in (self.RIGHT, self.TOP_RIGHT, self.BOTTOM_RIGHT):
-            rect.setWidth(max(self.get_minimum_width(), cursor_x - rect.left()))
-        if self.hovered_area in (self.TOP, self.TOP_LEFT, self.TOP_RIGHT):
-            rect.setY(min(rect.bottom() - self.get_minimum_height(), cursor_y))
-        if self.hovered_area in (self.BOTTOM, self.BOTTOM_LEFT, self.BOTTOM_RIGHT):
-            rect.setHeight(max(self.get_minimum_height(), cursor_y - rect.top()))
+        # get the variables to edit the rect with
+        width = current_width = rect.width()
+        height = current_height = rect.height()
 
-        # resize the item uniformly
+        # process the new width and height
+        if self.hovered_area in (
+            self.TOP_LEFT_AREA,
+            self.BOTTOM_LEFT_AREA,
+            self.LEFT_AREA,
+        ):
+            width = maths.clamp(rect.right() - cursor_x, min_width, max_width)
+        if self.hovered_area in (
+            self.TOP_LEFT_AREA,
+            self.TOP_RIGHT_AREA,
+            self.TOP_AREA,
+        ):
+            height = maths.clamp(rect.bottom() - cursor_y, min_height, max_height)
+        if self.hovered_area in (
+            self.TOP_RIGHT_AREA,
+            self.BOTTOM_RIGHT_AREA,
+            self.RIGHT_AREA,
+        ):
+            width = maths.clamp(cursor_x - rect.left(), min_width, max_width)
+        if self.hovered_area in (
+            self.BOTTOM_LEFT_AREA,
+            self.BOTTOM_RIGHT_AREA,
+            self.BOTTOM_AREA,
+        ):
+            height = maths.clamp(cursor_y - rect.top(), min_height, max_height)
+
+        # make sure the aspect ratio is kept
         if uniform:
-            width, height = rect.width(), rect.height()
-            aspect_ratio = width / height
+            aspect_ratio = current_width / current_height
+            if self.hovered_area in (
+                self.TOP_LEFT_AREA,
+                self.TOP_RIGHT_AREA,
+                self.BOTTOM_RIGHT_AREA,
+                self.BOTTOM_LEFT_AREA,
+                self.LEFT_AREA,
+                self.RIGHT_AREA,
+            ):
+                height = width / aspect_ratio
+            else:
+                width = height * aspect_ratio
 
+        # resize and move the rect
+        rect.setWidth(width)
+        rect.setHeight(height)
+        if self.hovered_area is self.TOP_LEFT_AREA:
+            rect.translate(current_width - width, current_height - height)
+        elif self.hovered_area in (self.LEFT_AREA, self.BOTTOM_LEFT_AREA):
+            rect.translate(current_width - width, 0)
+        elif self.hovered_area in (self.TOP_RIGHT_AREA, self.TOP_AREA):
+            rect.translate(0, current_height - height)
+
+        # resize arround the anchor point
         if center:
-            anchor_x, anchor_y = self.transformOriginPoint().toTuple()
-            if center:
-                new_anchor_x, new_anchor_y = utils.get_rect_relative_coordinates(
-                    anchor_x, anchor_y, current_rect, rect
-                )
-                rect.translate(anchor_x - new_anchor_x, anchor_y - new_anchor_y)
+            x, y = self.transformOriginPoint().toTuple()
+            new_x, new_y = utils.get_rect_relative_coordinates(x, y, current_rect, rect)
+            rect.translate(x - new_x, y - new_y)
 
         # set the new bounding rect of the item
         self.setRect(rect)
 
-    def rotate(self, event):
+    def rotate_event(self, event):
         """Rotate the item.
 
         Arguments:
             event (QEvent): The event that has been triggered.
         """
+        if self.is_locked():
+            return
+
         # get the current rect
         rect = self.rect()
         # get the corner beeing dragged
-        if self.hovered_area == self.TOP_LEFT:
+        if self.hovered_area == self.TOP_LEFT_AREA:
             corner = rect.topLeft()
-        elif self.hovered_area == self.TOP_RIGHT:
+        elif self.hovered_area == self.TOP_RIGHT_AREA:
             corner = rect.topRight()
-        elif self.hovered_area == self.BOTTOM_LEFT:
+        elif self.hovered_area == self.BOTTOM_LEFT_AREA:
             corner = rect.bottomLeft()
-        elif self.hovered_area == self.BOTTOM_RIGHT:
+        elif self.hovered_area == self.BOTTOM_RIGHT_AREA:
             corner = rect.bottomRight()
 
         # process the new angle
-        self.rotation_angle += maths.angle_between_points(
+        self.angle += maths.angle_between_points(
             anchor=self.transformOriginPoint().toTuple(),
             point1=corner.toTuple(),
             point2=event.pos().toTuple(),
             signed=True,
         )
-        self.setRotation(self.rotation_angle)
-
-    # events
+        self.setRotation(self.angle)
 
     def hoverMoveEvent(self, event):  # naqa C901
         """Override the hoverMoveEvent method.
@@ -361,6 +580,9 @@ class TransformableItem(widgets.GraphicsRectItem):
         Arguments:
             event (QEvent): The event that has been triggered.
         """
+        if self.is_locked():
+            return
+
         # inheritance
         super(TransformableItem, self).hoverMoveEvent(event)
 
@@ -394,31 +616,31 @@ class TransformableItem(widgets.GraphicsRectItem):
         # update the variables and cursor depending on the cursor hovering
         if hover_left:
             if hover_top:
-                self.hovered_area = self.TOP_LEFT
+                self.hovered_area = self.TOP_LEFT_AREA
             elif hover_bottom:
-                self.hovered_area = self.BOTTOM_LEFT
+                self.hovered_area = self.BOTTOM_LEFT_AREA
             else:
-                self.hovered_area = self.LEFT
+                self.hovered_area = self.LEFT_AREA
         elif hover_right:
             if hover_top:
-                self.hovered_area = self.TOP_RIGHT
+                self.hovered_area = self.TOP_RIGHT_AREA
             elif hover_bottom:
-                self.hovered_area = self.BOTTOM_RIGHT
+                self.hovered_area = self.BOTTOM_RIGHT_AREA
             else:
-                self.hovered_area = self.RIGHT
+                self.hovered_area = self.RIGHT_AREA
         elif hover_top:
-            self.hovered_area = self.TOP
+            self.hovered_area = self.TOP_AREA
         elif hover_bottom:
-            self.hovered_area = self.BOTTOM
+            self.hovered_area = self.BOTTOM_AREA
 
         # orient the resizing cursor if necessary depending on the hovered edge
         if not rotate:
-            angle = self.rotation_angle
-            if self.hovered_area in (self.BOTTOM_LEFT, self.TOP_RIGHT):
+            angle = self.angle
+            if self.hovered_area in (self.BOTTOM_LEFT_AREA, self.TOP_RIGHT_AREA):
                 angle -= 45
-            elif self.hovered_area in (self.TOP_LEFT, self.BOTTOM_RIGHT):
+            elif self.hovered_area in (self.TOP_LEFT_AREA, self.BOTTOM_RIGHT_AREA):
                 angle += 45
-            elif self.hovered_area in (self.TOP, self.BOTTOM):
+            elif self.hovered_area in (self.TOP_AREA, self.BOTTOM_AREA):
                 angle += 90
             cursor = cursor.transformed(QTransform().rotate(angle))
 
@@ -444,17 +666,20 @@ class TransformableItem(widgets.GraphicsRectItem):
         Arguments:
             event (QEvent): The event that has been triggered.
         """
+        if self.is_locked():
+            return
+
         # rotate
         if event.modifiers() == self.rotate_modifiers and self.hovered_area in (
-            self.TOP_LEFT,
-            self.TOP_RIGHT,
-            self.BOTTOM_LEFT,
-            self.BOTTOM_RIGHT,
+            self.TOP_LEFT_AREA,
+            self.TOP_RIGHT_AREA,
+            self.BOTTOM_LEFT_AREA,
+            self.BOTTOM_RIGHT_AREA,
         ):
-            self.rotate(event)
+            self.rotate_event(event)
         # scale
         elif self.hovered_area is not None:
-            self.resize(event)
+            self.resize_event(event)
         # inheritance
         else:
             super(TransformableItem, self).mouseMoveEvent(event)
@@ -468,7 +693,7 @@ class MainWindow(QGraphicsView):
         self.setSceneRect(0, 0, 800, 600)
 
         rect_item = TransformableItem()
-        rect_item.setRect(QRectF(0, 0, 150, 150))
+        rect_item.setRect(QRectF(100, 100, 150, 150))
         self.scene.addItem(rect_item)
 
         self.setRenderHint(QPainter.Antialiasing)
